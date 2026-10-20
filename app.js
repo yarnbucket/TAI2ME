@@ -510,6 +510,7 @@ function openClassSettings(preferredProvider) {
   const selected = saved?.provider || preferredProvider || 'ChatGPT';
   classProviderInput.value = Object.hasOwn(classOrigins,selected) ? selected : 'ChatGPT';
   classURLInput.value = saved?.url || '';
+  updateProviderFindHelp();
   classFeedback.textContent = 'After your first AI lesson, copy the conversation address from the browser bar, NOT the Share button. Leave blank to save only your AI provider.';
   if (typeof classDialog.showModal === 'function') {
     if (!classDialog.open) classDialog.showModal();
@@ -519,6 +520,18 @@ function closeClassSettings() {
   if (typeof classDialog.close === 'function' && classDialog.open) classDialog.close();
   else classDialog.removeAttribute('open');
 }
+function updateProviderFindHelp() {
+  const providerName = classProviderInput.value;
+  const instructions = {
+    ChatGPT: 'ChatGPT: Open the sidebar → Recents / chat history. Find your TAI2ME lesson, then use its conversation menu to rename it. In a browser, copy the address bar URL for the same conversation; do NOT tap Share.',
+    Gemini: 'Gemini: Open Menu → Recent chats, locate the lesson, and rename or pin it when available. A private /app/ conversation URL can be bookmarked; never use Share conversation.',
+    Claude: 'Claude: Open Chats and tasks / the chat sidebar → find the lesson → ⋮ → Rename. Open that chat in a browser and copy its address bar, not a public share link.',
+    Copilot: 'Copilot: Open the sidebar / chat history, find the TAI2ME lesson, then use the conversation menu to rename it when available. We will save Copilot as your provider and link to its history, not claim direct conversation access.',
+    'Other AI': 'In your preferred AI, open its conversation history and look for “TAI2ME — My AI Classroom.” Use its rename or pin option if available. Save the provider here; a private direct link is not supported.'
+  };
+  document.querySelector('#provider-find-help').textContent = instructions[providerName] || instructions['Other AI'];
+}
+classProviderInput.addEventListener('change', updateProviderFindHelp);
 document.querySelector('#class-manage').addEventListener('click',()=>openClassSettings());
 document.querySelector('#class-link-close').addEventListener('click',closeClassSettings);
 classDialog.addEventListener('click',event => { if (event.target === classDialog) closeClassSettings(); });
