@@ -172,6 +172,7 @@ function makePrompt() {
     'MY CLASSROOM TITLE: TAI2ME — My AI Classroom.',
     'If your platform supports renaming chats, recommend that I rename this conversation to that title and pin it. Do not claim that you have renamed it unless you actually can.',
     'Whenever I return to THIS conversation, continue my most recent mission before starting a new one. Use the previous messages and my latest progress passport to decide where we stopped; ask only if genuinely unclear.',
+    'After the first lesson, briefly tell me to find this same conversation in my AI chat history, rename it TAI2ME — My AI Classroom, and pin it if possible. Never suggest that TAI2ME can automatically locate or sync chats.',
     '',
     'MY LEARNING PREFERENCES (general categories only; no personal details):',
     `• Current level: ${experience}`,
@@ -221,7 +222,7 @@ function renderResult() {
         <div class="result-actions"><a class="primary" id="open-ai" target="_blank" rel="noopener noreferrer">Open ChatGPT with my instructions ↗</a><button type="button" class="secondary" id="copy-prompt">Copy instructions</button></div>
         <p id="launch-note" class="microcopy" role="status"></p>
         <p id="other-ai" class="microcopy" hidden>Choose Copy instructions, then open your preferred AI assistant and paste them into a new conversation.</p>
-        <div class="save-class-help"><strong>After your first lesson:</strong> Rename or pin your chat as <strong>TAI2ME — My AI Classroom</strong>. Return here to save the private conversation address so your TAI2ME icon can reopen the same class.<button type="button" id="save-class-open" class="secondary">Save / find my class →</button></div>
+        <div class="save-class-help"><strong>Important: your class lives in your AI's existing chat history.</strong> After your first lesson, rename or pin that chat as <strong>TAI2ME — My AI Classroom</strong>. Then save its private address here for one-tap resume. Never use the Share conversation link.<button type="button" id="save-class-open" class="secondary">Save / find my existing class →</button></div>
         <a id="open-ai-plain" class="plain-ai-link" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open AI without putting instructions in a link ↗</a>
       </div>
       <div class="notice"><strong>Privacy checkpoint:</strong> Prefilled AI links contain the classroom instructions in the URL, which can appear in browser history and be received or logged by the chosen provider. This uses only your general learning preferences; review the text above before launching. Choose Copy instructions and the plain link for more privacy. TAI2ME does not collect your answers or connect to your AI account.</div>
@@ -439,6 +440,8 @@ const classURLInput = document.querySelector('#class-url');
 const classFeedback = document.querySelector('#class-link-feedback');
 const classHome = document.querySelector('#class-home');
 const classContinue = document.querySelector('#class-continue');
+const classFind = document.querySelector('#class-find');
+const classOpenProvider = document.querySelector('#class-open-provider');
 const classHomeStatus = document.querySelector('#class-home-status');
 const classHomeTitle = document.querySelector('#class-home-title');
 const classOrigins = Object.freeze({
@@ -488,22 +491,23 @@ function readClassBookmark() {
 function renderClassBookmark() {
   const saved = readClassBookmark();
   classHome.hidden = !saved;
+  // Never point the "Continue" shortcut at an AI homepage: doing so opens
+  // an empty/new chat and falsely implies a specific lesson was recovered.
+  classContinue.hidden = true;
+  classContinue.removeAttribute('href');
+  classFind.hidden = true;
   if (!saved) return;
   classHomeTitle.textContent = CLASS_TITLE;
   if (saved.url) {
     classContinue.href = saved.url;
+    classContinue.hidden = false;
     classContinue.textContent = '▶ Continue My Class';
-    classHomeStatus.textContent = 'Your ' + saved.provider + ' classroom link is saved on this device. You must be signed into the same AI account.';
+    classHomeStatus.textContent = 'Ready to resume your saved ' + saved.provider + ' conversation. Sign into the same AI account if asked.';
   } else {
-    const url = classOrigins[saved.provider];
-    classContinue.hidden = !url;
-    if (url) {
-      classContinue.href = url;
-      classContinue.textContent = '↗ Find My Class in ' + saved.provider;
-    }
-    classHomeStatus.textContent = 'Open your ' + saved.provider + ' chat history and find "' + CLASS_TITLE + '". This provider does not have a saved direct classroom link here.';
+    classFind.hidden = false;
+    classFind.textContent = '⌕ Find My Existing Class';
+    classHomeStatus.textContent = 'Your ' + saved.provider + ' classroom is not linked to a specific chat yet. Find it in your existing chat history; no new lesson is needed.';
   }
-  if (saved.url) classContinue.hidden=false;
 }
 function openClassSettings(preferredProvider) {
   const saved = readClassBookmark();
@@ -511,7 +515,9 @@ function openClassSettings(preferredProvider) {
   classProviderInput.value = Object.hasOwn(classOrigins,selected) ? selected : 'ChatGPT';
   classURLInput.value = saved?.url || '';
   updateProviderFindHelp();
-  classFeedback.textContent = 'After your first AI lesson, copy the conversation address from the browser bar, NOT the Share button. Leave blank to save only your AI provider.';
+  classFeedback.textContent = saved?.url
+    ? 'A direct conversation link is saved. You can update it or select your existing chat when you return.'
+    : 'Open your existing chat first, copy its browser address bar URL (not Share), and paste it here. Without a direct link you will get a history guide instead.';
   if (typeof classDialog.showModal === 'function') {
     if (!classDialog.open) classDialog.showModal();
   } else classDialog.setAttribute('open','');
@@ -530,8 +536,15 @@ function updateProviderFindHelp() {
     'Other AI': 'In your preferred AI, open its conversation history and look for “TAI2ME — My AI Classroom.” Use its rename or pin option if available. Save the provider here; a private direct link is not supported.'
   };
   document.querySelector('#provider-find-help').textContent = instructions[providerName] || instructions['Other AI'];
+  const url = classOrigins[providerName];
+  classOpenProvider.hidden = !url;
+  if (url) {
+    classOpenProvider.href = url;
+    classOpenProvider.textContent = '↗ Open ' + providerName + ' to find my existing chat';
+  } else classOpenProvider.removeAttribute('href');
 }
 classProviderInput.addEventListener('change', updateProviderFindHelp);
+classFind.addEventListener('click',()=>openClassSettings());
 document.querySelector('#class-manage').addEventListener('click',()=>openClassSettings());
 document.querySelector('#class-link-close').addEventListener('click',closeClassSettings);
 classDialog.addEventListener('click',event => { if (event.target === classDialog) closeClassSettings(); });
@@ -548,7 +561,7 @@ document.querySelector('#class-link-save').addEventListener('click',()=>{
     renderClassBookmark();
     classFeedback.textContent = checked.url
       ? 'Saved! Your TAI2ME icon can now reopen this private chat on this device.'
-      : 'Saved your AI provider. When you return, TAI2ME will help you find this class in chat history.';
+      : 'Saved provider only (not a conversation link). Your T2 shortcut will now show a guided Find My Existing Class button, not open a blank chat.';
     // Explicit confirmation before closing so the student sees what was saved.
   } catch(e) {
     classFeedback.textContent = e.message || 'Could not save this shortcut; use your AI provider chat history instead.';
