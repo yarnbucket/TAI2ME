@@ -63,3 +63,5 @@
 .classroom-dialog .install-steps{gap:6px}
 .classroom-dialog .install-steps li{font-size:12px;padding-top:9px;padding-bottom:9px}
 @media(max-width:600px){.class-home{padding:16px}.class-continue{font-size:17px;min-height:58px}.classroom-dialog .install-steps li{padding-left:44px}}
+
+.provider-find-help{padding:10px 12px;border-radius:10px;background:#20324f;border:1px solid #3d5674;font-size:12px;line-height:1.6;color:#e1eafd;margin:9px 0}
