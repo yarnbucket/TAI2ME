@@ -266,4 +266,110 @@ privacyToggle.addEventListener('click',()=>{
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
 }
+
+// Platform-aware installation guidance. No data collection or external calls.
+const installTrigger = document.querySelector('#install-trigger');
+const installDialog = document.querySelector('#install-dialog');
+const installGuide = document.querySelector('#install-guide');
+const installDescription = document.querySelector('#install-description');
+const installFeedback = document.querySelector('#install-feedback');
+const installNative = document.querySelector('#install-native');
+let pendingInstallPrompt = null;
+
+function tai2meIsInstalled() {
+  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
+function updateInstallBadge() {
+  installTrigger.hidden = tai2meIsInstalled();
+}
+function showInstallSteps(steps) {
+  const list = document.createElement('ol');
+  list.className = 'install-steps';
+  steps.forEach(text => {
+    const item = document.createElement('li');
+    item.textContent = text;
+    list.append(item);
+  });
+  installGuide.replaceChildren(list);
+}
+function updateInstallGuide() {
+  const ua = navigator.userAgent || '';
+  const appleMobile = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const android = /Android/i.test(ua);
+  const chromeIOS = /CriOS/i.test(ua);
+  installFeedback.textContent = '';
+  if (appleMobile) {
+    installDescription.textContent = 'On iPhone or iPad, add the TAI2ME icon to your Home Screen. Apple normally uses the Share menu rather than a direct install button.';
+    showInstallSteps(chromeIOS ? [
+      'Open TAI2ME in Chrome on your iPhone or iPad.',
+      'Tap the Share button in Chrome, then choose Add to Home Screen.',
+      'Confirm the name TAI2ME and tap Add. For the most consistent web-app experience, you can also open the site in Safari and use its Add to Home Screen option.'
+    ] : [
+      'Open this TAI2ME page in Safari. If you are inside another app, use its menu to open in Safari.',
+      'Tap Share (square with an upward arrow). In newer Safari layouts, you may first tap the Page Menu and then Share.',
+      'Scroll and select Add to Home Screen. If missing, scroll to Edit Actions and add it.',
+      'Enable Open as Web App if shown, then tap Add. The TAI2ME icon appears on your iPhone or iPad Home Screen.'
+    ]);
+  } else if (android) {
+    installDescription.textContent = 'Add TAI2ME to your Android Home Screen. Chrome may offer a one-tap install; if not, use the browser menu.';
+    showInstallSteps([
+      'Open TAI2ME in Chrome on your Android phone or tablet.',
+      'Tap the three-dot menu (⋮) near the address bar.',
+      'Choose Install app, Install and create shortcut, or Add to Home screen (the wording varies).',
+      'Confirm Install or Add. The TAI2ME icon will appear on your Home Screen.'
+    ]);
+  } else {
+    installDescription.textContent = 'On a computer, install TAI2ME from a supported browser or keep using it as a normal website.';
+    showInstallSteps([
+      'Open TAI2ME in Chrome or Microsoft Edge.',
+      'Look for an Install icon in the address bar or the browser menu.',
+      'Choose Install TAI2ME and confirm. You can then launch it like a normal desktop app.'
+    ]);
+  }
+  installNative.hidden = appleMobile || !pendingInstallPrompt;
+}
+function closeInstallGuide() {
+  if (typeof installDialog.close === 'function' && installDialog.open) installDialog.close();
+  else installDialog.removeAttribute('open');
+  installTrigger.focus();
+}
+installTrigger.addEventListener('click', () => {
+  if (tai2meIsInstalled()) return;
+  updateInstallGuide();
+  if (typeof installDialog.showModal === 'function') installDialog.showModal();
+  else installDialog.setAttribute('open', '');
+});
+document.querySelector('#install-close').addEventListener('click', closeInstallGuide);
+document.querySelector('#install-done').addEventListener('click', closeInstallGuide);
+installDialog.addEventListener('click', event => {
+  if (event.target === installDialog) closeInstallGuide();
+});
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  pendingInstallPrompt = event;
+  if (installDialog.open) updateInstallGuide();
+});
+installNative.addEventListener('click', async () => {
+  if (!pendingInstallPrompt) return;
+  const promptEvent = pendingInstallPrompt;
+  pendingInstallPrompt = null;
+  installNative.hidden = true;
+  try {
+    await promptEvent.prompt();
+    const result = await promptEvent.userChoice;
+    installFeedback.textContent = result.outcome === 'accepted' ?
+      'Installation accepted. Look for TAI2ME on your device.' :
+      'Installation canceled. You can still use TAI2ME in your browser.';
+  } catch (error) {
+    installFeedback.textContent = 'Automatic installation is unavailable. Please follow the steps above.';
+  }
+});
+window.addEventListener('appinstalled', () => {
+  pendingInstallPrompt = null;
+  updateInstallBadge();
+  if (installDialog.open) installDialog.close();
+});
+window.matchMedia('(display-mode: standalone)').addEventListener?.('change', updateInstallBadge);
+updateInstallBadge();
+
 render();
