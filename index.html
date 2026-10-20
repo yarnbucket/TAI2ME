@@ -17,13 +17,33 @@
   <div class="shell">
     <header class="topbar">
       <div class="brand"><div class="brand-mark" aria-hidden="true">T2</div><div class="brand-name"><strong>TAI2ME</strong><small>YOUR AI. YOUR CLASSROOM.</small></div></div>
-      <div class="beta">STARTER · V1.0</div>
+      <div class="topbar-actions">
+        <button type="button" id="install-trigger" class="install-badge" aria-haspopup="dialog" aria-controls="install-dialog" aria-label="Install TAI2ME or view installation instructions"><span aria-hidden="true">↓</span> Install app</button>
+        <div class="beta">STARTER · V1.1</div>
+      </div>
     </header>
     <main id="app" class="app" tabindex="-1" aria-live="polite"></main>
     <footer class="footer">
       <span>TAI2ME · TEACH · CREATE · PROTECT</span>
       <button id="privacy-toggle" class="foot-link" type="button" aria-controls="privacy-notes" aria-expanded="false">How privacy works</button>
     </footer>
+    <dialog id="install-dialog" class="install-dialog" aria-labelledby="install-title" aria-describedby="install-description">
+      <div class="install-modal-top">
+        <div>
+          <p class="install-eyebrow">TAI2ME · QUICK SETUP</p>
+          <h2 id="install-title">Add TAI2ME to your device</h2>
+        </div>
+        <button type="button" id="install-close" class="install-close" aria-label="Close installation instructions">×</button>
+      </div>
+      <p id="install-description" class="install-description"></p>
+      <div id="install-guide"></div>
+      <p id="install-feedback" class="install-feedback" role="status" aria-live="polite"></p>
+      <div class="install-actions">
+        <button type="button" id="install-native" class="primary" hidden>Install TAI2ME now</button>
+        <button type="button" id="install-done" class="secondary">Got it</button>
+      </div>
+      <p class="install-footnote">Free to add. No app-store account or AI login is needed to install TAI2ME.</p>
+    </dialog>
     <aside id="privacy-notes" class="privacy-notes" hidden>
       <h3>Privacy and transparency</h3>
       <p>TAI2ME runs the questionnaire in your browser. It has no sign-in, database, analytics, ads, forms that submit, or third-party scripts. Your answers are kept only in this page's temporary memory, not saved between visits.</p>
