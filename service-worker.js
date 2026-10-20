@@ -1,7 +1,7 @@
 'use strict';
 // Network-first public PWA assets, with an offline fallback.
 // This service worker does not transmit or store user questionnaire answers.
-const CACHE_NAME = 'tai2me-v1-4-0';
+const CACHE_NAME = 'tai2me-v1-4-1';
 const STATIC_FILES = [
   './', './index.html', './styles.css', './app.js', './manifest.webmanifest',
   './assets/icon-192.png', './assets/icon-512.png'
