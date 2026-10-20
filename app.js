@@ -1,6 +1,7 @@
 'use strict';
 
-// Privacy-first public demo. No analytics, network APIs, tracking, accounts, or storage of answers.
+// Privacy-first public demo. No analytics, tracking, accounts, or storage of quiz answers.
+// A user-approved classroom URL/provider bookmark may be saved locally, never uploaded.
 // All curriculum content in this file is public. Do not put paid lessons or secrets in a public PWA.
 const QUESTIONS = [
   { key: 'experience', title: 'Where are you with AI today?', hint: 'Every starting point is welcome. This helps set the right pace.', multi: false, choices: [
@@ -83,9 +84,11 @@ function renderWelcome() {
     <div class="promise-row"><span class="promise">✓ No sign-up</span><span class="promise">✓ No tracking</span><span class="promise">✓ You choose what to share</span></div>
     <button type="button" class="primary" id="begin">Build my AI classroom <span aria-hidden="true">→</span></button>
     <p class="hero-note">Takes about 2 minutes · No sign-up, tracking, or passwords · Works with your own AI account.</p>
+    <button type="button" class="return-help-btn" id="find-class">Already have a class? Find or save it here →</button>
     <div class="mini-flow"><strong>YOUR INTERESTS</strong><span aria-hidden="true">→</span><strong>YOUR LEARNING PLAN</strong><span aria-hidden="true">→</span><strong>YOUR AI</strong></div>
   </section>`;
   document.querySelector('#begin').addEventListener('click', () => { step = 0; renderAndFocus(); });
+  document.querySelector('#find-class').addEventListener('click', () => openClassSettings());
 }
 function renderQuestion(q) {
   const value = answers[q.key];
@@ -166,6 +169,10 @@ function makePrompt() {
   return [
     'You are my TAI2ME adaptive learning tutor. TEACH me to think, create, and apply safeguards rather than simply doing my work for me.',
     '',
+    'MY CLASSROOM TITLE: TAI2ME — My AI Classroom.',
+    'If your platform supports renaming chats, recommend that I rename this conversation to that title and pin it. Do not claim that you have renamed it unless you actually can.',
+    'Whenever I return to THIS conversation, continue my most recent mission before starting a new one. Use the previous messages and my latest progress passport to decide where we stopped; ask only if genuinely unclear.',
+    '',
     'MY LEARNING PREFERENCES (general categories only; no personal details):',
     `• Current level: ${experience}`,
     `• Reason for learning: ${motivation}`,
@@ -214,6 +221,7 @@ function renderResult() {
         <div class="result-actions"><a class="primary" id="open-ai" target="_blank" rel="noopener noreferrer">Open ChatGPT with my instructions ↗</a><button type="button" class="secondary" id="copy-prompt">Copy instructions</button></div>
         <p id="launch-note" class="microcopy" role="status"></p>
         <p id="other-ai" class="microcopy" hidden>Choose Copy instructions, then open your preferred AI assistant and paste them into a new conversation.</p>
+        <div class="save-class-help"><strong>After your first lesson:</strong> Rename or pin your chat as <strong>TAI2ME — My AI Classroom</strong>. Return here to save the private conversation address so your TAI2ME icon can reopen the same class.<button type="button" id="save-class-open" class="secondary">Save / find my class →</button></div>
         <a id="open-ai-plain" class="plain-ai-link" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open AI without putting instructions in a link ↗</a>
       </div>
       <div class="notice"><strong>Privacy checkpoint:</strong> Prefilled AI links contain the classroom instructions in the URL, which can appear in browser history and be received or logged by the chosen provider. This uses only your general learning preferences; review the text above before launching. Choose Copy instructions and the plain link for more privacy. TAI2ME does not collect your answers or connect to your AI account.</div>
@@ -234,6 +242,7 @@ function renderResult() {
     provEl.append(button);
   });
   document.querySelector('#copy-prompt').addEventListener('click',copyPrompt);
+  document.querySelector('#save-class-open').addEventListener('click',()=>openClassSettings(provider));
   document.querySelector('#open-ai').addEventListener('click', () => {
     // Optional clipboard fallback, initiated by the student's direct tap.
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -418,5 +427,126 @@ window.addEventListener('appinstalled', () => {
 });
 window.matchMedia('(display-mode: standalone)').addEventListener?.('change', updateInstallBadge);
 updateInstallBadge();
+
+
+// Return-to-classroom bookmark. TAI2ME cannot access provider accounts or chat history.
+// Saving is opt-in and stays in this device's browser storage (no server).
+const CLASS_KEY = 'tai2me_saved_classroom_v1';
+const CLASS_TITLE = 'TAI2ME — My AI Classroom';
+const classDialog = document.querySelector('#class-link-dialog');
+const classProviderInput = document.querySelector('#class-provider');
+const classURLInput = document.querySelector('#class-url');
+const classFeedback = document.querySelector('#class-link-feedback');
+const classHome = document.querySelector('#class-home');
+const classContinue = document.querySelector('#class-continue');
+const classHomeStatus = document.querySelector('#class-home-status');
+const classHomeTitle = document.querySelector('#class-home-title');
+const classOrigins = Object.freeze({
+  ChatGPT: 'https://chatgpt.com/',
+  Gemini: 'https://gemini.google.com/app',
+  Claude: 'https://claude.ai/new',
+  Copilot: 'https://copilot.com/',
+  'Other AI': ''
+});
+const classProviderByHost = Object.freeze({
+  'chatgpt.com': 'ChatGPT',
+  'gemini.google.com': 'Gemini',
+  'claude.ai': 'Claude'
+});
+
+function validatedClassLink(raw) {
+  const value = raw.trim();
+  if (!value) return {url:'',provider:null};
+  // This is always a normal address-bar URL, never a public shared-chat link.
+  let parsed;
+  try { parsed = new URL(value); } catch(e) { throw new Error('Paste the full https:// conversation address from your browser.'); }
+  if (parsed.protocol !== 'https:' || parsed.username || parsed.password || parsed.port) {
+    throw new Error('Only standard HTTPS conversation links are accepted.');
+  }
+  const providerName = classProviderByHost[parsed.hostname.toLowerCase()];
+  if (!providerName) throw new Error('Direct reopening is supported only for private ChatGPT, Gemini and Claude conversation links. Other providers use chat history.');
+  const pathname = parsed.pathname;
+  let valid = false;
+  if (providerName === 'ChatGPT') valid = /^\/c\/[a-zA-Z0-9-]{10,128}\/?$/.test(pathname);
+  if (providerName === 'Gemini') valid = /^\/app\/[a-zA-Z0-9_-]{6,160}\/?$/.test(pathname);
+  if (providerName === 'Claude') valid = /^\/chat\/[a-zA-Z0-9-]{6,160}\/?$/.test(pathname);
+  if (!valid) throw new Error('This does not look like your private conversation page. Do not use Share links; open your chat in a browser and copy its address bar.');
+  return {url:parsed.origin + pathname.replace(/\/$/,''),provider:providerName};
+}
+function readClassBookmark() {
+  try {
+    const data = JSON.parse(localStorage.getItem(CLASS_KEY) || 'null');
+    if (!data || typeof data !== 'object' || !Object.hasOwn(classOrigins,data.provider)) return null;
+    if (data.url) {
+      const checked = validatedClassLink(data.url);
+      if (checked.provider !== data.provider) return null;
+      return {provider:data.provider,url:checked.url};
+    }
+    return {provider:data.provider,url:''};
+  } catch(e) { return null; }
+}
+function renderClassBookmark() {
+  const saved = readClassBookmark();
+  classHome.hidden = !saved;
+  if (!saved) return;
+  classHomeTitle.textContent = CLASS_TITLE;
+  if (saved.url) {
+    classContinue.href = saved.url;
+    classContinue.textContent = '▶ Continue My Class';
+    classHomeStatus.textContent = 'Your ' + saved.provider + ' classroom link is saved on this device. You must be signed into the same AI account.';
+  } else {
+    const url = classOrigins[saved.provider];
+    classContinue.hidden = !url;
+    if (url) {
+      classContinue.href = url;
+      classContinue.textContent = '↗ Find My Class in ' + saved.provider;
+    }
+    classHomeStatus.textContent = 'Open your ' + saved.provider + ' chat history and find "' + CLASS_TITLE + '". This provider does not have a saved direct classroom link here.';
+  }
+  if (saved.url) classContinue.hidden=false;
+}
+function openClassSettings(preferredProvider) {
+  const saved = readClassBookmark();
+  const selected = saved?.provider || preferredProvider || 'ChatGPT';
+  classProviderInput.value = Object.hasOwn(classOrigins,selected) ? selected : 'ChatGPT';
+  classURLInput.value = saved?.url || '';
+  classFeedback.textContent = 'After your first AI lesson, copy the conversation address from the browser bar, NOT the Share button. Leave blank to save only your AI provider.';
+  if (typeof classDialog.showModal === 'function') {
+    if (!classDialog.open) classDialog.showModal();
+  } else classDialog.setAttribute('open','');
+}
+function closeClassSettings() {
+  if (typeof classDialog.close === 'function' && classDialog.open) classDialog.close();
+  else classDialog.removeAttribute('open');
+}
+document.querySelector('#class-manage').addEventListener('click',()=>openClassSettings());
+document.querySelector('#class-link-close').addEventListener('click',closeClassSettings);
+classDialog.addEventListener('click',event => { if (event.target === classDialog) closeClassSettings(); });
+document.querySelector('#class-link-save').addEventListener('click',()=>{
+  try {
+    const checked = validatedClassLink(classURLInput.value);
+    if (checked.provider && checked.provider !== classProviderInput.value) {
+      classFeedback.textContent = 'This URL belongs to ' + checked.provider + '. Select that AI provider or leave the address empty.';
+      return;
+    }
+    const bookmark = {provider:classProviderInput.value,url:checked.url};
+    localStorage.setItem(CLASS_KEY,JSON.stringify(bookmark));
+    if (localStorage.getItem(CLASS_KEY) !== JSON.stringify(bookmark)) throw new Error('Browser storage is unavailable.');
+    renderClassBookmark();
+    classFeedback.textContent = checked.url
+      ? 'Saved! Your TAI2ME icon can now reopen this private chat on this device.'
+      : 'Saved your AI provider. When you return, TAI2ME will help you find this class in chat history.';
+    // Explicit confirmation before closing so the student sees what was saved.
+  } catch(e) {
+    classFeedback.textContent = e.message || 'Could not save this shortcut; use your AI provider chat history instead.';
+  }
+});
+document.querySelector('#class-link-delete').addEventListener('click',()=>{
+  try {localStorage.removeItem(CLASS_KEY);} catch(e) {}
+  renderClassBookmark();
+  classURLInput.value='';
+  classFeedback.textContent='Removed the local bookmark. Your original chat at the AI provider has not been deleted.';
+});
+renderClassBookmark();
 
 render();
