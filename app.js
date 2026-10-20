@@ -199,7 +199,7 @@ function renderResult() {
     <div class="result-panel">
       <p class="eyebrow">TAI2ME · READY TO LEARN</p>
       <h1 id="result-title">Meet your <span class="accent">AI tutor.</span></h1>
-      <p class="result-intro">Your ${answers.duration}-minute classroom is ready. Review the plan, copy it, and paste it into the AI assistant you already use. Nothing has been sent.</p>
+      <p class="result-intro">Your ${answers.duration}-minute classroom is ready. Review your instructions, choose your AI, then launch. Nothing is shared until you take action.</p>
       <div class="result-grid">
         <div class="info-card"><h3>Suggested learning path</h3><ol id="path-list"></ol></div>
         <div class="info-card"><h3>Built around you</h3><p id="summary"></p></div>
@@ -208,13 +208,15 @@ function renderResult() {
         <div class="prompt-head"><h3>1 · Pick your own AI</h3></div>
         <div class="selector" id="providers" aria-label="Your preferred AI provider"></div>
         <h3>2 · Preview your classroom instructions</h3>
-        <p class="prompt-help">This is the exact text you will paste. It contains only broad topics and learning preferences, not personal information.</p>
+        <p class="prompt-help">This is the exact classroom setup we will use. It contains broad topics and preferences—no names, passwords, or sensitive details.</p>
         <div id="prompt-text" class="prompt-box" role="region" aria-label="Generated learning prompt" tabindex="0"></div>
         <p id="copy-status" class="copy-status" role="status"></p>
-        <div class="result-actions"><button type="button" class="primary" id="copy-prompt">Copy my classroom setup</button><a class="secondary" id="open-ai" target="_blank" rel="noopener noreferrer">Open ChatGPT ↗</a></div>
-        <p id="other-ai" class="microcopy" hidden>Open your preferred AI assistant yourself and paste the copied prompt there.</p>
+        <div class="result-actions"><a class="primary" id="open-ai" target="_blank" rel="noopener noreferrer">Open ChatGPT with my instructions ↗</a><button type="button" class="secondary" id="copy-prompt">Copy instructions</button></div>
+        <p id="launch-note" class="microcopy" role="status"></p>
+        <p id="other-ai" class="microcopy" hidden>Choose Copy instructions, then open your preferred AI assistant and paste them into a new conversation.</p>
+        <a id="open-ai-plain" class="plain-ai-link" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open AI without putting instructions in a link ↗</a>
       </div>
-      <div class="notice"><strong>Privacy checkpoint:</strong> Copying does not transmit anything. Opening an AI service does not transmit your answers from TAI2ME. Your pasted prompt is subject to the AI provider's privacy practices. Never share sensitive information.</div>
+      <div class="notice"><strong>Privacy checkpoint:</strong> Prefilled AI links contain the classroom instructions in the URL, which can appear in browser history and be received or logged by the chosen provider. This uses only your general learning preferences; review the text above before launching. Choose Copy instructions and the plain link for more privacy. TAI2ME does not collect your answers or connect to your AI account.</div>
       <div class="btn-row"><button type="button" id="edit-answers" class="secondary">← Edit answers</button><button type="button" id="reset" class="reset">Erase this session and start again</button></div>
       <p class="resource-note">TAI2ME is a self-guided starter, not an accredited school. It cannot control another AI assistant or promise certification, course credit, or grading accuracy. Your AI chat does not automatically sync back to this app.</p>
     </div>
@@ -232,16 +234,48 @@ function renderResult() {
     provEl.append(button);
   });
   document.querySelector('#copy-prompt').addEventListener('click',copyPrompt);
+  document.querySelector('#open-ai').addEventListener('click', () => {
+    // Optional clipboard fallback, initiated by the student's direct tap.
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(makePrompt()).then(() => {
+        document.querySelector('#copy-status').textContent='Instructions copied as backup. If your AI does not prefill, paste them into its message box.';
+      }).catch(() => {
+        document.querySelector('#copy-status').textContent='If your AI does not prefill, return here and tap Copy instructions.';
+      });
+    }
+  });
   document.querySelector('#edit-answers').addEventListener('click',()=>{step=QUESTIONS.length-1;renderAndFocus();});
   document.querySelector('#reset').addEventListener('click',()=>{for(const key of Object.keys(answers))delete answers[key];step=-1;provider='ChatGPT';renderAndFocus();});
   updateProviders();
 }
+// Prefill is a provider convenience, not an API or an account connection.
+// Students preview what is sent in the URL, and may choose a plain link instead.
+function makePrefillLink(item) {
+  if (item.name !== 'ChatGPT' && item.name !== 'Claude') return null;
+  const base = item.url;
+  const url = base + (base.includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(makePrompt());
+  return url.length <= 6000 ? url : null;
+}
 function updateProviders() {
   const selected = PROVIDERS.find(p=>p.name===provider);
   document.querySelectorAll('#providers .provider').forEach(b=>b.setAttribute('aria-pressed',String(b.textContent===provider)));
-  const link=document.querySelector('#open-ai');
-  if(selected.url){link.hidden=false;link.href=selected.url;link.textContent=`Open ${selected.name} ↗`;}
-  else{link.hidden=true;link.removeAttribute('href');}
+  const launch = document.querySelector('#open-ai');
+  const plain = document.querySelector('#open-ai-plain');
+  const note = document.querySelector('#launch-note');
+  const prefill = makePrefillLink(selected);
+  if (!selected.url) {
+    launch.hidden=true; launch.removeAttribute('href');
+    plain.hidden=true; plain.removeAttribute('href');
+    note.textContent='Copy the classroom instructions, then open your preferred assistant yourself.';
+  } else {
+    launch.hidden=false;
+    launch.href=prefill || selected.url;
+    launch.textContent=prefill ? `Open ${selected.name} with my instructions ↗` : `Open ${selected.name} (paste instructions) ↗`;
+    plain.hidden=false; plain.href=selected.url;
+    note.textContent=prefill
+      ? `The link will carry your visible instructions to ${selected.name}. If its prompt box is empty, use Copy instructions and paste instead. The provider may change or automatically process linked prompts.`
+      : `${selected.name} does not have a verified reliable prompt-prefill link here. Copy instructions, open it, and paste to begin.`;
+  }
   document.querySelector('#other-ai').hidden=!!selected.url;
 }
 async function copyPrompt() {
