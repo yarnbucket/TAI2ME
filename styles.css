@@ -35,3 +35,9 @@
 .install-arrow{display:grid;place-items:center;width:36px;height:36px;border:2px solid #163e53;border-radius:12px;font-size:25px;line-height:1}
 .install-subtext{margin:0;font-size:12px;color:#c5d4ed;font-weight:650;letter-spacing:.1px}
 @media(max-width:600px){.install-callout{margin:-9px auto 26px;gap:9px}.install-badge.install-main{width:min(100%,400px);min-height:73px;padding:14px 18px;border-radius:18px;font-size:20px}.install-subtext{font-size:12px}}
+
+/* v1.3 — opt-in AI prefilling with a plain-link alternative */
+.plain-ai-link{display:inline-block;margin:7px 0 0;color:#d3e6ff;font-size:12px;text-decoration:underline;text-underline-offset:3px}
+#launch-note{padding:9px 0 0;line-height:1.6}
+.result-actions #open-ai{min-width:215px}
+@media(max-width:600px){.result-actions #open-ai{flex-basis:100%}}
