@@ -25,3 +25,13 @@
 .install-actions .primary,.install-actions .secondary{min-height:45px}
 .install-footnote{font-size:12px;color:var(--muted);line-height:1.5;margin:16px 0 0}
 @media(max-width:600px){.topbar-actions{flex-direction:column;align-items:flex-end;gap:6px}.install-badge{font-size:12px;min-height:36px;padding:7px 10px}.install-dialog{max-height:88dvh;padding:20px}.install-actions .primary,.install-actions .secondary{flex:1}.install-actions .primary{min-width:160px}}
+
+
+/* v1.2 — prominent, centered installation CTA */
+.install-callout{display:flex;align-items:center;flex-direction:column;justify-content:center;gap:10px;margin:-8px auto 28px;width:100%;text-align:center}
+.install-badge.install-main{display:flex;align-items:center;justify-content:center;gap:14px;width:min(100%,420px);min-height:72px;padding:14px 22px;border:2px solid #94ffdf;border-radius:19px;background:linear-gradient(112deg,#80efd7 0%,#81ccff 100%);color:#102138;font-size:clamp(18px,4.2vw,23px);font-weight:900;letter-spacing:.8px;box-shadow:0 10px 35px rgba(100,222,234,.18);touch-action:manipulation}
+.install-badge.install-main:hover{background:linear-gradient(112deg,#a1fce7 0%,#b4ddff 100%);transform:translateY(-1px)}
+.install-badge.install-main:active{transform:translateY(1px)}
+.install-arrow{display:grid;place-items:center;width:36px;height:36px;border:2px solid #163e53;border-radius:12px;font-size:25px;line-height:1}
+.install-subtext{margin:0;font-size:12px;color:#c5d4ed;font-weight:650;letter-spacing:.1px}
+@media(max-width:600px){.install-callout{margin:-9px auto 26px;gap:9px}.install-badge.install-main{width:min(100%,400px);min-height:73px;padding:14px 18px;border-radius:18px;font-size:20px}.install-subtext{font-size:12px}}
