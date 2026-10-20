@@ -65,3 +65,9 @@
 @media(max-width:600px){.class-home{padding:16px}.class-continue{font-size:17px;min-height:58px}.classroom-dialog .install-steps li{padding-left:44px}}
 
 .provider-find-help{padding:10px 12px;border-radius:10px;background:#20324f;border:1px solid #3d5674;font-size:12px;line-height:1.6;color:#e1eafd;margin:9px 0}
+
+/* v1.5 — never pretend a provider homepage is a saved lesson */
+.class-open-provider{display:flex;width:100%;margin:12px 0 8px;min-height:48px;align-items:center;justify-content:center;text-align:center}
+.class-provider-caution{font-size:12px;line-height:1.55;color:#cbd8f0;margin:5px 0 16px}
+#class-find{width:100%;max-width:480px;margin:0 auto;min-height:62px;font-size:18px}
+#class-continue:focus-visible,#class-find:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
