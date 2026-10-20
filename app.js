@@ -337,8 +337,9 @@ function closeInstallGuide() {
 function openInstallGuide(message) {
   updateInstallGuide();
   if (message) installFeedback.textContent = message;
-  if (typeof installDialog.showModal === 'function') installDialog.showModal();
-  else installDialog.setAttribute('open', '');
+  if (typeof installDialog.showModal === 'function') {
+    if (!installDialog.open) installDialog.showModal();
+  } else installDialog.setAttribute('open', '');
 }
 async function requestNativeInstall() {
   const event = pendingInstallPrompt;
