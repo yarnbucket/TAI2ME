@@ -17,7 +17,7 @@
   <div class="shell">
     <header class="topbar">
       <div class="brand"><div class="brand-mark" aria-hidden="true">T2</div><div class="brand-name"><strong>TAI2ME</strong><small>YOUR AI. YOUR CLASSROOM.</small></div></div>
-      <div class="beta">STARTER · V1.4</div>
+      <div class="beta">STARTER · V1.5</div>
     </header>
     <section id="install-callout" class="install-callout" aria-label="Install TAI2ME on your device">
       <button type="button" id="install-trigger" class="install-badge install-main" aria-haspopup="dialog" aria-controls="install-dialog" aria-label="Install TAI2ME on your device">
@@ -30,7 +30,8 @@
       <div class="class-home-label">YOUR CLASSROOM SHORTCUT</div>
       <h2 id="class-home-title">TAI2ME — My AI Classroom</h2>
       <p id="class-home-status"></p>
-      <a id="class-continue" class="primary class-continue" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">▶ Continue My Class</a>
+      <a id="class-continue" class="primary class-continue" target="_blank" rel="noopener noreferrer" hidden>▶ Continue My Class</a>
+      <button type="button" id="class-find" class="primary class-continue" hidden>⌕ Find My Existing Class</button>
       <button type="button" id="class-manage" class="class-manage">Change or remove saved class</button>
     </section>
     <main id="app" class="app" tabindex="-1" aria-live="polite"></main>
@@ -63,12 +64,12 @@
         </div>
         <button type="button" id="class-link-close" class="install-close" aria-label="Close classroom settings">×</button>
       </div>
-      <p class="install-description">Name your existing AI chat <strong>TAI2ME — My AI Classroom</strong> in your AI provider's history. TAI2ME cannot rename it for you.</p>
+      <p class="install-description"><strong>Your lessons live in your AI's chat history.</strong> TAI2ME cannot see, rename, or find them automatically. You don't need another new chat.</p>
       <ol class="install-steps">
-        <li>Start a lesson in your chosen AI, and send at least one message.</li>
-        <li>Open that exact conversation in your phone's or computer's browser.</li>
-        <li>Copy its address from the <strong>browser address bar</strong>—not the AI's Share conversation button.</li>
-        <li>Return to your TAI2ME shortcut and paste the address below.</li>
+        <li>In your AI's sidebar, select the <strong>existing lesson</strong> under Pinned, Recents, or History. Don't choose New chat.</li>
+        <li>Rename it <strong>TAI2ME — My AI Classroom</strong> and pin it if your AI supports that.</li>
+        <li>To make the T2 shortcut reopen the exact chat, open that conversation in a browser and copy the <strong>address bar URL</strong> (never the Share conversation link).</li>
+        <li>Return here, paste that private URL, and tap Save classroom shortcut. You only need to do this once per installed TAI2ME app/browser.</li>
       </ol>
       <p class="class-warning"><strong>Privacy:</strong> Do not create or paste a public shared-chat link. We accept only supported private conversation addresses. Your bookmark stays on this device, not on a TAI2ME server.</p>
       <label class="class-field-label" for="class-provider">Your AI provider</label>
@@ -76,9 +77,11 @@
         <option>ChatGPT</option><option>Gemini</option><option>Claude</option><option>Copilot</option><option>Other AI</option>
       </select>
       <p id="provider-find-help" class="provider-find-help"></p>
+      <a id="class-open-provider" class="secondary class-open-provider" target="_blank" rel="noopener noreferrer" hidden>↗ Open AI to find existing chat</a>
+      <p class="class-provider-caution">This opens your AI service, <strong>not</strong> a new TAI2ME class. Select your saved conversation from its history. The direct chat shortcut works only after you save its address below.</p>
       <label class="class-field-label" for="class-url">Private conversation address (optional)</label>
       <input id="class-url" class="class-url-input" type="url" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://chatgpt.com/c/..." aria-describedby="class-link-feedback">
-      <p id="class-link-feedback" class="class-link-feedback" role="status" aria-live="polite">If your AI doesn't support a private chat address, leave this empty. We'll show you where to find its chat history instead.</p>
+      <p id="class-link-feedback" class="class-link-feedback" role="status" aria-live="polite">A private conversation address is needed for one-tap resume. If your AI doesn't provide one, leave this blank to save its name and follow the history guide instead.</p>
       <div class="class-actions">
         <button type="button" id="class-link-save" class="primary">Save classroom shortcut</button>
         <button type="button" id="class-link-delete" class="secondary">Forget this shortcut</button>
