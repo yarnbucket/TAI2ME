@@ -64,3 +64,13 @@ Project authors retain whatever rights are recognized by applicable law in their
 After a student creates a chat, they can rename it **TAI2ME — My AI Classroom** in their own AI account. TAI2ME cannot rename or read provider chats directly. A student may explicitly save the existing conversation's private address-bar URL into this device's localStorage. TAI2ME supports direct conversation URL bookmarks for ChatGPT (/c/...), Claude (/chat/...), and Gemini (/app/...). Public shared-chat URLs are rejected and must never be used for a private bookmark. Copilot or unsupported URL forms use the provider's normal chat-history interface instead.
 
 When the installed TAI2ME icon is opened, **Continue My Class** reopens the locally saved browser chat in a new tab where the user must sign in to the same account. This does not sync across devices or browser profiles, and deleting app data may erase the bookmark. No questionnaire answers or private chat content are collected by TAI2ME. On iOS, set up the bookmark inside the installed web app if separate Home Screen storage applies.
+
+
+## v1.5 — no empty-chat detours
+
+Previous versions pointed provider-only bookmarks at a provider homepage; this often presented an empty new chat. **Now the T2 Home Screen experience has two explicit states:**
+
+- **Direct conversation saved:** Show *Continue My Class*, which opens only a validated private conversation address.
+- **Only provider saved:** Show *Find My Existing Class*. This opens in-app chat-history instructions, **not** an empty AI homepage. The student explicitly chooses *Open [AI] to find my existing chat* when ready, opens the old conversation in their chat history, and can save its private address bar link for one-tap resume.
+
+Existing provider-only v1.4 bookmarks automatically follow the safer guide. No new accounts or collection are introduced; bookmarks remain local to the browser/app profile. Shared-chat links continue to be rejected.
