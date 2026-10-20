@@ -269,6 +269,7 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')) {
 
 // Platform-aware installation guidance. No data collection or external calls.
 const installTrigger = document.querySelector('#install-trigger');
+const installCallout = document.querySelector('#install-callout');
 const installDialog = document.querySelector('#install-dialog');
 const installGuide = document.querySelector('#install-guide');
 const installDescription = document.querySelector('#install-description');
@@ -280,7 +281,7 @@ function tai2meIsInstalled() {
   return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 }
 function updateInstallBadge() {
-  installTrigger.hidden = tai2meIsInstalled();
+  installCallout.hidden = tai2meIsInstalled();
 }
 function showInstallSteps(steps) {
   const list = document.createElement('ol');
@@ -311,12 +312,12 @@ function updateInstallGuide() {
       'Enable Open as Web App if shown, then tap Add. The TAI2ME icon appears on your iPhone or iPad Home Screen.'
     ]);
   } else if (android) {
-    installDescription.textContent = 'Add TAI2ME to your Android Home Screen. Chrome may offer a one-tap install; if not, use the browser menu.';
+    installDescription.textContent = 'Chrome has not offered a one-tap install prompt yet. That does not mean your device is broken: you can add the app through Chrome’s menu. A PWA is not an APK download.';
     showInstallSteps([
-      'Open TAI2ME in Chrome on your Android phone or tablet.',
-      'Tap the three-dot menu (⋮) near the address bar.',
-      'Choose Install app, Install and create shortcut, or Add to Home screen (the wording varies).',
-      'Confirm Install or Add. The TAI2ME icon will appear on your Home Screen.'
+      'Open this TAI2ME site in Chrome (not inside another app).',
+      'Tap Chrome’s three-dot menu (⋮) at the upper right.',
+      'Choose Add to Home screen or Install app. Depending on your Chrome version, tap Install or Create shortcut.',
+      'Confirm. Check your phone’s Home Screen or app drawer for the TAI2ME icon.'
     ]);
   } else {
     installDescription.textContent = 'On a computer, install TAI2ME from a supported browser or keep using it as a normal website.';
@@ -331,13 +332,38 @@ function updateInstallGuide() {
 function closeInstallGuide() {
   if (typeof installDialog.close === 'function' && installDialog.open) installDialog.close();
   else installDialog.removeAttribute('open');
-  installTrigger.focus();
+  if (!tai2meIsInstalled()) installTrigger.focus();
+}
+function openInstallGuide(message) {
+  updateInstallGuide();
+  if (message) installFeedback.textContent = message;
+  if (typeof installDialog.showModal === 'function') installDialog.showModal();
+  else installDialog.setAttribute('open', '');
+}
+async function requestNativeInstall() {
+  const event = pendingInstallPrompt;
+  if (!event) { openInstallGuide(); return; }
+  pendingInstallPrompt = null;
+  installNative.hidden = true;
+  try {
+    await event.prompt();
+    const decision = await event.userChoice;
+    if (decision.outcome === 'accepted') {
+      // Chrome may fire appinstalled later; do not say the installation is complete yet.
+      if (installDialog.open) installFeedback.textContent = 'Installation requested. Follow Chrome’s confirmation and check your Home Screen.';
+    } else {
+      openInstallGuide('The install prompt was dismissed. You can still add the app using the browser menu.');
+    }
+  } catch (error) {
+    openInstallGuide('Automatic installation is unavailable in this browser. Use the steps below to add TAI2ME.');
+  }
 }
 installTrigger.addEventListener('click', () => {
   if (tai2meIsInstalled()) return;
-  updateInstallGuide();
-  if (typeof installDialog.showModal === 'function') installDialog.showModal();
-  else installDialog.setAttribute('open', '');
+  // Android Chrome offers a real OS install prompt when eligible; invoke it
+  // directly from the user's tap. On iOS or other browsers, show instructions.
+  if (pendingInstallPrompt) { void requestNativeInstall(); return; }
+  openInstallGuide();
 });
 document.querySelector('#install-close').addEventListener('click', closeInstallGuide);
 document.querySelector('#install-done').addEventListener('click', closeInstallGuide);
@@ -349,21 +375,7 @@ window.addEventListener('beforeinstallprompt', event => {
   pendingInstallPrompt = event;
   if (installDialog.open) updateInstallGuide();
 });
-installNative.addEventListener('click', async () => {
-  if (!pendingInstallPrompt) return;
-  const promptEvent = pendingInstallPrompt;
-  pendingInstallPrompt = null;
-  installNative.hidden = true;
-  try {
-    await promptEvent.prompt();
-    const result = await promptEvent.userChoice;
-    installFeedback.textContent = result.outcome === 'accepted' ?
-      'Installation accepted. Look for TAI2ME on your device.' :
-      'Installation canceled. You can still use TAI2ME in your browser.';
-  } catch (error) {
-    installFeedback.textContent = 'Automatic installation is unavailable. Please follow the steps above.';
-  }
-});
+installNative.addEventListener('click', () => { void requestNativeInstall(); });
 window.addEventListener('appinstalled', () => {
   pendingInstallPrompt = null;
   updateInstallBadge();
