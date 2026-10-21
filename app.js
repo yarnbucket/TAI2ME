@@ -153,9 +153,9 @@ function makePath() {
   // Make the student's outcome visible first: a 5-item limit must not hide their stated goal.
   if (interestIds.includes('certification') || answers.goal === 'exam') add('Map an official certification syllabus to practice assessments');
   if (interestIds.includes('publishing') || answers.goal === 'launch') add('Deployment, app-store requirements, licensing, and possible revenue models');
-  if (interestIds.some(id => ['vibe-coding','python','javascript','json','pwa'].includes(id)) || ['first-app','portfolio','launch'].includes(answers.goal)) add('HTML, CSS, JavaScript, JSON, and Python fundamentals');
-  if (interestIds.includes('pwa') || ['first-app','portfolio','launch'].includes(answers.goal)) add('Build, test, and share a mobile-friendly PWA');
-  if (interestIds.includes('prompting') || interestIds.includes('ai-basics')) add('Practical prompt design and verification');
+  if (interestIds.some(id => ['vibe-coding','python','javascript','json','pwa'].includes(id)) || ['first-app','launch'].includes(answers.goal)) add('HTML, CSS, JavaScript, JSON, and Python fundamentals');
+  if (interestIds.includes('pwa') || ['first-app','launch'].includes(answers.goal)) add('Build, test, and share a mobile-friendly PWA');
+  if (interestIds.includes('prompting')) add('Practice creating and refining prompts for your chosen interests');
   if (interestIds.includes('agents')) add('Automation and AI agent safeguards');
   if (interestIds.includes('safety')) add('Privacy, secure coding, copyright, and threat awareness');
   if (items.length < 3) add('A mini-project with checkpoints and a reflective review');
