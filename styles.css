@@ -155,3 +155,7 @@
 .hero .welcome-resume-lesson{display:flex;width:100%;min-height:54px;margin:12px 0 0;border-color:#6ec8c1;background:#1a4562;color:#d8fff4;font-size:clamp(15px,3.8vw,19px);text-align:center}
 .hero .welcome-resume-lesson:hover{background:#235976}
 .hero .welcome-resume-lesson:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+
+/* v1.14: external provider boundary displayed at launch */
+.provider-boundary{font-size:12px;line-height:1.55;color:#cbdcf2;margin:12px 0 18px;padding:11px 13px;border-left:3px solid #70d6c9;background:#1b2b48;border-radius:8px}
+.provider-boundary strong{color:#e7fff8}
