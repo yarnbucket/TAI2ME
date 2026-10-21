@@ -84,10 +84,12 @@ function renderWelcome() {
     <p class="lede">Start with a friendly six-question interview about your experience, interests and goals. Then meet popular AI assistants, choose one, and build your adaptive classroom—at your pace.</p>
     <div class="promise-row"><span class="promise">✓ No sign-up</span><span class="promise">✓ No tracking</span><span class="promise">✓ You choose what to share</span></div>
     <button type="button" class="primary" id="begin">Build my AI classroom <span aria-hidden="true">→</span></button>
+    <a class="secondary welcome-resume-lesson" id="welcome-resume-lesson" target="_blank" rel="noopener noreferrer" hidden>▶ Continue My Class</a>
     <p class="hero-note">Takes about 2 minutes · No sign-up, tracking, or passwords · Works with your own AI account.</p>
     <div class="mini-flow"><strong>YOUR INTERESTS</strong><span aria-hidden="true">→</span><strong>YOUR LEARNING PLAN</strong><span aria-hidden="true">→</span><strong>YOUR AI</strong></div>
   </section>`;
   document.querySelector('#begin').addEventListener('click', () => { step = 0; renderAndFocus(); });
+  renderClassBookmark();
 }
 function renderQuestion(q) {
   const value = answers[q.key];
@@ -465,6 +467,7 @@ const CLASS_TITLE = 'TAI2ME — My AI Classroom';
 const classDialog = document.querySelector('#class-link-dialog');
 const classProviderInput = document.querySelector('#class-provider');
 const classURLInput = document.querySelector('#class-url');
+const classLessonTitleInput = document.querySelector('#class-lesson-title');
 const classFeedback = document.querySelector('#class-link-feedback');
 const classResumeAvailable = document.querySelector('#class-resume-available');
 const classResumeLink = document.querySelector('#class-resume-link');
@@ -506,23 +509,35 @@ function readClassBookmark() {
   try {
     const data = JSON.parse(localStorage.getItem(CLASS_KEY) || 'null');
     if (!data || typeof data !== 'object' || !Object.hasOwn(classOrigins,data.provider)) return null;
+    // Older bookmarks without a title continue to work.
+    const lessonTitle = typeof data.lessonTitle === 'string' ? data.lessonTitle.trim().slice(0,60) : '';
     if (data.url) {
       const checked = validatedClassLink(data.url);
       if (checked.provider !== data.provider) return null;
-      return {provider:data.provider,url:checked.url};
+      return {provider:data.provider,url:checked.url,lessonTitle};
     }
-    return {provider:data.provider,url:''};
+    return {provider:data.provider,url:'',lessonTitle};
   } catch(e) { return null; }
 }
 function renderClassBookmark() {
   const saved = readClassBookmark();
-  // A saved chat can be reopened from the discreet settings dialog only.
-  // Never offer a generic AI homepage as "Continue My Class".
+  // Never show a Continue link without a validated private conversation URL.
+  const label = saved?.lessonTitle ? 'Continue ' + saved.lessonTitle : 'Continue My Class';
   classResumeLink.removeAttribute('href');
   classResumeAvailable.hidden = !saved?.url;
   if (saved?.url) {
     classResumeLink.href = saved.url;
-    classResumeLink.textContent = '▶ Continue my ' + saved.provider + ' class';
+    classResumeLink.textContent = '▶ ' + label;
+  }
+  const welcomeResume = document.querySelector('#welcome-resume-lesson');
+  if (welcomeResume) {
+    welcomeResume.hidden = !saved?.url;
+    welcomeResume.removeAttribute('href');
+    if (saved?.url) {
+      welcomeResume.href = saved.url;
+      welcomeResume.textContent = '▶ ' + label;
+      welcomeResume.setAttribute('aria-label', label + ' in ' + saved.provider);
+    }
   }
 }
 function openClassSettings(preferredProvider) {
@@ -530,6 +545,7 @@ function openClassSettings(preferredProvider) {
   const selected = saved?.provider || preferredProvider || 'ChatGPT';
   classProviderInput.value = Object.hasOwn(classOrigins,selected) ? selected : 'ChatGPT';
   classURLInput.value = saved?.url || '';
+  classLessonTitleInput.value = saved?.lessonTitle || '';
   updateProviderFindHelp();
   classFeedback.textContent = saved?.url
     ? 'A direct conversation link is saved. You can update it or select your existing chat when you return.'
@@ -571,13 +587,14 @@ document.querySelector('#class-link-save').addEventListener('click',()=>{
       classFeedback.textContent = 'This URL belongs to ' + checked.provider + '. Select that AI provider or leave the address empty.';
       return;
     }
-    const bookmark = {provider:classProviderInput.value,url:checked.url};
+    const lessonTitle = classLessonTitleInput.value.trim().replace(/\s+/g,' ').slice(0,60);
+    const bookmark = {provider:classProviderInput.value,url:checked.url,lessonTitle};
     localStorage.setItem(CLASS_KEY,JSON.stringify(bookmark));
     if (localStorage.getItem(CLASS_KEY) !== JSON.stringify(bookmark)) throw new Error('Browser storage is unavailable.');
     renderClassBookmark();
     classFeedback.textContent = checked.url
-      ? 'Saved! Your TAI2ME icon can now reopen this private chat on this device.'
-      : 'Saved provider only, not a specific conversation. Use this guide anytime to find your existing lesson in your AI chat history.';
+      ? 'Saved! Close this window and tap Continue ' + (lessonTitle || 'My Class') + ' to reopen this conversation.'
+      : 'Lesson name saved, but no direct chat address yet. Find that existing chat in your AI history and save its private address to enable the Continue button.';
     // Explicit confirmation before closing so the student sees what was saved.
   } catch(e) {
     classFeedback.textContent = e.message || 'Could not save this shortcut; use your AI provider chat history instead.';
@@ -587,6 +604,7 @@ document.querySelector('#class-link-delete').addEventListener('click',()=>{
   try {localStorage.removeItem(CLASS_KEY);} catch(e) {}
   renderClassBookmark();
   classURLInput.value='';
+  classLessonTitleInput.value='';
   classFeedback.textContent='Removed the local bookmark. Your original chat at the AI provider has not been deleted.';
 });
 renderClassBookmark();
