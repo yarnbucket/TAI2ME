@@ -8,7 +8,7 @@ const QUESTIONS = [
     ['new','🌱','Brand new','I am starting from zero.'],
     ['exploring','🔍','Just exploring','I have tried an AI assistant a little.'],
     ['confident','⚡','Already using AI','I use AI and want to go deeper.'],
-    ['advanced','🧩','Experienced','I want challenging, technical lessons.']
+    ['advanced','🧩','Experienced with AI','I use AI regularly and want to keep growing.']
   ] },
   { key: 'motivation', title: 'What brings you here?', hint: 'Choose the reason that feels most important to you right now.', multi: false, choices: [
     ['curious','💡','Personal curiosity','Learn what AI can really do.'],
@@ -17,7 +17,7 @@ const QUESTIONS = [
     ['creator','🚀','I have an idea','Create an app, game, or digital tool.'],
     ['credentials','🎓','Professional learning','Prepare for credentials or more study.']
   ] },
-  { key: 'interests', title: 'What would you love to learn?', hint: 'Choose up to five interests. You can explore the others later.', multi: true, max: 5, choices: [
+  { key: 'interests', title: 'What would you love to learn?', hint: 'Choose up to five interests. Core prompting skills are included in every path.', multi: true, max: 5, choices: [
     ['ai-basics','🧠','Everyday AI','Understand and use AI confidently.'],
     ['prompting','✍️','Prompting','Learn to ask, verify, and improve.'],
     ['vibe-coding','✨','Vibe coding','Direct AI to help build ideas.'],
@@ -147,8 +147,9 @@ function makePath() {
   const interestIds = answers.interests || [];
   const items = [];
   const add = value => { if (!items.includes(value)) items.push(value); };
-  if (answers.experience === 'new' || answers.experience === 'exploring') add('AI fundamentals, critical thinking, and safe prompting');
-  else add('Evaluate AI output, reasoning, and responsible workflows');
+  add('Core prompting: clear requests, useful context, verifying answers, and safe use');
+  if (answers.experience === 'new' || answers.experience === 'exploring') add('AI fundamentals and critical thinking');
+  else add('Evaluating AI results and responsible workflows');
   // Make the student's outcome visible first: a 5-item limit must not hide their stated goal.
   if (interestIds.includes('certification') || answers.goal === 'exam') add('Map an official certification syllabus to practice assessments');
   if (interestIds.includes('publishing') || answers.goal === 'launch') add('Deployment, app-store requirements, licensing, and possible revenue models');
@@ -186,8 +187,8 @@ function makePrompt() {
     ...path.map((item, i) => `${i + 1}. ${item}`),
     '',
     'HOW TO TEACH:',
-    '1. Begin with ONE diagnostic question. Use my response to choose the correct starting difficulty; explain the course roadmap briefly.',
-    '2. Deliver structured courses with sections and missions: short theory, why it works, a practical example, and active exercise. Map modern tools to timeless principles.',
+    '1. Begin with ONE friendly diagnostic question. Use my answer and chosen interests to set the right difficulty; do not assume that AI experience means programming knowledge. Explain my roadmap briefly.',
+    '2. Deliver adaptive lessons with short theory, why it works, practical examples and exercises. Weave prompting skills into every pathway: clarity, context, instructions, iteration, checking uncertain answers and protecting private information. Offer experienced students a quick chance to demonstrate mastery, then advance; teach and reassess as needed. Do not force technical topics unless I choose them. Map modern tools to timeless principles.',
     '3. Ask ONE question at a time and wait for me before continuing. Prefer ~80% multiple-choice and ~20% short written answers initially, then increase written/project work as I advance. Do not reveal the correct answer before I respond.',
     '4. Grade fairly out of 100 with clear criteria, explain what I missed, and adapt the next exercise. Distinguish verified facts from inference; never invent my scores or progress.',
     '5. Target at least 80% mastery before advancing. Offer hints, review, and a fresh equivalent assessment when I struggle, without simply supplying answers.',
