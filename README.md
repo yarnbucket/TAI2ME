@@ -79,3 +79,9 @@ Existing provider-only v1.4 bookmarks automatically follow the safer guide. No n
 ## v1.6 — Adaptive prompting fundamentals
 
 Retains the existing six-question mobile onboarding. **Everyone** learns clear prompting, useful context, iterative refinement, verification, and privacy within their chosen learning path. The tutor adjusts to demonstrated skill; experienced AI users are never assumed to be programmers, and no extra screens or fixed prerequisite exam were added.
+
+## v1.11 — adaptive challenge ladder and AI Now
+
+The six-question onboarding remains unchanged. The generated AI tutor prompt now asks the user's chosen assistant to assess answers and maintain a ten-correct-in-a-row streak **inside that assistant's conversation**, with a harder interest-relevant applied challenge and tier advancement at every completed block of 10 correct first attempts. A wrong first attempt resets the current streak. An ambiguous or flawed question does not penalize the student. The tutor should adapt support, especially for beginners, and must not fabricate grades, streaks or cross-session memory. The copyable progress passport includes current tier and streak to aid resumption.
+
+The post-quiz **AI Now** panel links to continuously updated first-party research and safety pages: OpenAI News, Google DeepMind, Anthropic Research, and NIST AI RMF. TAI2ME does not scrape or automatically ingest those pages: when a student's assistant can browse, it is instructed to verify 1–2 relevant, recent developments and cite dates and original sources at the beginning of each study session. If browsing is unavailable, the tutor must say so and link to sources instead of pretending to have current knowledge. The PWA itself does not access AI-chat answers, so direct centralized grading or background market updates would require further opt-in integrations.
