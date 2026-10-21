@@ -61,6 +61,7 @@ const PROVIDERS = [
   {name:'Gemini',url:'https://gemini.google.com/app'},
   {name:'Claude',url:'https://claude.ai/new'},
   {name:'Copilot',url:'https://copilot.microsoft.com/'},
+  {name:'Perplexity',url:'https://www.perplexity.ai/'},
   {name:'Other AI',url:null}
 ];
 const findQuestion = key => QUESTIONS.find(q => q.key === key);
@@ -80,7 +81,7 @@ function renderWelcome() {
   app.innerHTML = `<section class="hero" aria-labelledby="welcome-title">
     <p class="eyebrow">TAI2ME · LEARN ON YOUR OWN TERMS</p>
     <h1 id="welcome-title"><span class="welcome-title-line">Your AI.</span><span class="welcome-title-line accent">Your Classroom.</span></h1>
-    <p class="lede">Answer six quick questions, then turn the AI you already use into your personal, adaptive tutor. Real lessons, questions, grading, creative projects, and safeguards—at your pace.</p>
+    <p class="lede">Start with a friendly six-question interview about your experience, interests and goals. Then meet popular AI assistants, choose one, and build your adaptive classroom—at your pace.</p>
     <div class="promise-row"><span class="promise">✓ No sign-up</span><span class="promise">✓ No tracking</span><span class="promise">✓ You choose what to share</span></div>
     <button type="button" class="primary" id="begin">Build my AI classroom <span aria-hidden="true">→</span></button>
     <p class="hero-note">Takes about 2 minutes · No sign-up, tracking, or passwords · Works with your own AI account.</p>
@@ -92,7 +93,7 @@ function renderQuestion(q) {
   const value = answers[q.key];
   const selected = q.multi ? (value || []) : value;
   app.innerHTML = `<section class="workspace" aria-labelledby="question-title">
-     <div class="step-top"><span>YOUR STARTING POINT</span><span>QUESTION ${step + 1} OF ${QUESTIONS.length}</span></div>
+     <div class="step-top"><span>YOUR QUICK INTERVIEW</span><span>QUESTION ${step + 1} OF ${QUESTIONS.length}</span></div>
      <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="6" aria-valuenow="${step + 1}" aria-label="Questionnaire progress"><div class="progress-fill"></div></div>
      <div class="question-panel"><p class="eyebrow">A little about your learning goals</p><h1 id="question-title">${q.title}</h1><p class="hint">${q.hint}</p>
        <div id="choices" class="choice-list" aria-label="Answer options"></div>
@@ -186,7 +187,7 @@ function makePrompt() {
     '',
     'HOW TO TEACH:',
     '1. Start with ONE diagnostic question. Set difficulty from demonstrated skill and my chosen interests, not assumed coding experience.',
-    '2. Teach short theory, why it works, an example and practice. Thread clear prompting, context, iteration, verification and privacy throughout. Let me test out of mastered material.',
+    '2. Teach short theory, why it works, an example and practice. Thread clear prompting, context, iteration, verification and privacy throughout. Let me test out of mastered material. When helpful, explain which AI tools fit a task without claiming one universally best.',
     '3. Ask ONE question at a time, waiting for my answer. Start with ~80% multiple choice and ~20% short writing; increase applied tasks as I advance.',
     '4. Grade with an answer key or stated rubric. Maintain streak=0 initially (or restore a documented passport). Only a correct, independent FIRST attempt adds 1; an incorrect or partial first attempt resets streak=0. Flawed/ambiguous questions do not count. Never invent results.',
     '5. CHALLENGE LADDER: Start tier=1 (or restore passport). Each time I reach TEN correct answers consecutively at the current tier, increase tier by 1, reset block streak to 0, and immediately give a harder, realistic transfer challenge suited to my interests. Repeat without a fixed cap—even for beginners. For mistakes, explain, scaffold, then reassess fairly.',
@@ -205,7 +206,7 @@ function renderResult() {
     <div class="result-panel">
       <p class="eyebrow">TAI2ME · READY TO LEARN</p>
       <h1 id="result-title">Meet your <span class="accent">AI tutor.</span></h1>
-      <p class="result-intro">Your ${answers.duration}-minute classroom is ready. Review your instructions, choose your AI, then launch. Nothing is shared until you take action.</p>
+      <p class="result-intro">Your interview is complete. Meet the AI options below, choose one that suits you, and launch your ${answers.duration}-minute classroom. Nothing is sent until you decide.</p>
       <div class="result-grid">
         <div class="info-card"><h3>Suggested learning path</h3><ol id="path-list"></ol></div>
         <div class="info-card"><h3>Built around you</h3><p id="summary"></p></div>
@@ -225,6 +226,18 @@ function renderResult() {
         </div>
         <small>These links lead to updated external pages. TAI2ME does not automatically fetch, store or verify their headlines, and it does not track your reading.</small>
       </section>
+      <details class="ai-guide" open>
+        <summary>Meet five popular AI assistants <span class="ai-guide-expand">Tap to show/hide</span></summary>
+        <p class="ai-guide-intro">There are many AI models and specialized tools—no fixed total and no single winner. These five are familiar starting points, not a complete list. Choose based on your interests and account access.</p>
+        <div class="ai-guide-list">
+          <div class="ai-guide-item"><strong>ChatGPT</strong><span>Learning, writing, ideas, coding and creative projects</span><a href="https://help.openai.com/en/articles/9260256-chatgpt-capabilities-overview" target="_blank" rel="noopener noreferrer" aria-label="Learn about ChatGPT capabilities">Info ↗</a></div>
+          <div class="ai-guide-item"><strong>Gemini</strong><span>Google-connected work, research and learning tools</span><a href="https://support.google.com/gemini?hl=en" target="_blank" rel="noopener noreferrer" aria-label="Learn about Gemini capabilities">Info ↗</a></div>
+          <div class="ai-guide-item"><strong>Claude</strong><span>Writing, reading documents, analysis and coding</span><a href="https://support.anthropic.com/en/articles/7996845-what-are-some-things-i-can-use-claude-for" target="_blank" rel="noopener noreferrer" aria-label="Learn about Claude capabilities">Info ↗</a></div>
+          <div class="ai-guide-item"><strong>Copilot</strong><span>Word, Excel, PowerPoint and Microsoft workplace tools</span><a href="https://support.microsoft.com/en-us/microsoft-365-copilot/what-is-microsoft-copilot-app" target="_blank" rel="noopener noreferrer" aria-label="Learn about Microsoft Copilot capabilities">Info ↗</a></div>
+          <div class="ai-guide-item"><strong>Perplexity</strong><span>Web research and exploring cited sources</span><a href="https://www.perplexity.ai/help-center/en/articles/10352903-what-is-pro-search" target="_blank" rel="noopener noreferrer" aria-label="Learn about Perplexity capabilities">Info ↗</a></div>
+        </div>
+        <p class="ai-guide-footnote">Typical use cases, not permanent rankings. Features vary with subscription, location and updates. Starting with the AI you already use is fine.</p>
+      </details>
       <div class="prompt-panel">
         <div class="prompt-head"><h3>1 · Pick your own AI</h3></div>
         <div class="selector" id="providers" aria-label="Your preferred AI provider"></div>
@@ -461,6 +474,7 @@ const classOrigins = Object.freeze({
   Gemini: 'https://gemini.google.com/app',
   Claude: 'https://claude.ai/new',
   Copilot: 'https://copilot.com/',
+  Perplexity: 'https://www.perplexity.ai/',
   'Other AI': ''
 });
 const classProviderByHost = Object.freeze({
@@ -535,6 +549,7 @@ function updateProviderFindHelp() {
     Gemini: 'Gemini: Open Menu → Recent chats, locate the lesson, and rename or pin it when available. A private /app/ conversation URL can be bookmarked; never use Share conversation.',
     Claude: 'Claude: Open Chats and tasks / the chat sidebar → find the lesson → ⋮ → Rename. Open that chat in a browser and copy its address bar, not a public share link.',
     Copilot: 'Copilot: Open the sidebar / chat history, find the TAI2ME lesson, then use the conversation menu to rename it when available. We will save Copilot as your provider and link to its history, not claim direct conversation access.',
+    Perplexity: 'Perplexity: Open your Library or chat history, select the existing lesson, and rename it if available. TAI2ME can save the provider but cannot directly retrieve that chat.',
     'Other AI': 'In your preferred AI, open its conversation history and look for “TAI2ME — My AI Classroom.” Use its rename or pin option if available. Save the provider here; a private direct link is not supported.'
   };
   document.querySelector('#provider-find-help').textContent = instructions[providerName] || instructions['Other AI'];
