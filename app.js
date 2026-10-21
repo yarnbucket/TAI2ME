@@ -309,7 +309,7 @@ privacyToggle.addEventListener('click',()=>{
 document.querySelector('#footer-find-class').addEventListener('click', () => openClassSettings());
 
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js',{updateViaCache:'none'}).catch(()=>{}));
 }
 
 // Platform-aware installation guidance. No data collection or external calls.
