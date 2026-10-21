@@ -210,6 +210,7 @@ function renderResult() {
         <div class="info-card"><h3>Suggested learning path</h3><ol id="path-list"></ol></div>
         <div class="info-card"><h3>Built around you</h3><p id="summary"></p></div>
       </div>
+      <p class="challenge-summary">⚡ Every 10 correct answers in a row unlocks a tougher real-world challenge. Your AI tutor tracks progress inside your class conversation.</p>
       <section class="ai-now" aria-labelledby="ai-now-heading">
         <div class="ai-now-heading">
           <h2 id="ai-now-heading">AI Now · What's changing?</h2>
