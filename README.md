@@ -89,3 +89,9 @@ The post-quiz **AI Now** panel links to continuously updated first-party researc
 ## v1.12 — first-time interview and AI orientation
 
 The original six-question interview is preserved. After answering, students meet five familiar AI assistants (ChatGPT, Gemini, Claude, Copilot and Perplexity) in an expandable, sourced guide. Typical use cases are not a fixed ranking; the number of AI tools changes. Students can choose an existing account or Other AI. Perplexity supports the copy-and-paste launch and provider-history fallback, not an unverified chat prefill or private chat recovery integration.
+
+## v1.13 — Continue Lesson X from the T2 icon
+
+An existing student may open the **Find my class** footer settings in the installed TAI2ME PWA, choose their AI provider, enter an optional short lesson name (e.g. **Lesson 4**), and save a **private conversation URL** copied from that conversation's browser address bar. On future visits, the T2 Home Screen icon opens TAI2ME with a new **Continue Lesson 4** button that follows the validated URL. Users with an old URL bookmark see **Continue My Class** until they add a name. No resume button is shown if only the provider or a lesson name is saved, preventing empty new chats. The saved lesson label and URL remain in local browser/app storage; they are not synced to other devices or transmitted by TAI2ME. Uninstalling or clearing storage can erase the shortcut.
+
+TAI2ME cannot call a separate operating-system Home Screen shortcut by name or look up private chat history by the lesson title. The saved URL can sometimes open the provider's native app via its verified/deep-link handling; otherwise it opens the specified conversation in a browser. A public shared-chat URL is never accepted as a private shortcut. Students must be signed into the correct AI account.
