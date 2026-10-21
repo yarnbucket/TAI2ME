@@ -1,9 +1,9 @@
 'use strict';
 // v1.9: versioned app assets avoid mixed old/new releases in installed PWAs.
 // Only public app files are cached. Student quiz responses and private bookmarks remain outside the worker.
-const CACHE_NAME='tai2me-v1-10-0';
+const CACHE_NAME='tai2me-v1-11-0';
 const STATIC_FILES=[
-  './', './index.html', './styles.css?v=1.10.0', './app.js?v=1.10.0',
+  './', './index.html', './styles.css?v=1.11.0', './app.js?v=1.11.0',
   './manifest.webmanifest', './assets/icon-192.png', './assets/icon-512.png'
 ];
 const STATIC_URLS=new Set(STATIC_FILES.map(p=>new URL(p,self.registration.scope).href));
