@@ -79,7 +79,7 @@ function render() {
 function renderWelcome() {
   app.innerHTML = `<section class="hero" aria-labelledby="welcome-title">
     <p class="eyebrow">TAI2ME · LEARN ON YOUR OWN TERMS</p>
-    <h1 id="welcome-title">Your AI. <span class="accent">Your classroom.</span></h1>
+    <h1 id="welcome-title"><span class="welcome-title-line">Your AI.</span><span class="welcome-title-line accent">Your Classroom.</span></h1>
     <p class="lede">Answer six quick questions, then turn the AI you already use into your personal, adaptive tutor. Real lessons, questions, grading, creative projects, and safeguards—at your pace.</p>
     <div class="promise-row"><span class="promise">✓ No sign-up</span><span class="promise">✓ No tracking</span><span class="promise">✓ You choose what to share</span></div>
     <button type="button" class="primary" id="begin">Build my AI classroom <span aria-hidden="true">→</span></button>
