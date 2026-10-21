@@ -188,12 +188,12 @@ function makePrompt() {
     ...path.map((item, i) => `${i + 1}. ${item}`),
     '',
     'HOW TO TEACH:',
-    '1. Start with ONE diagnostic question. Set difficulty from demonstrated skill and my chosen interests, not assumed coding experience.',
+    '1. Teach one simple concept in plain language, then ask ONE low-stakes diagnostic question. Adjust to my goals and answers. No surprise 100-point stress tests for beginners.',
     '2. Teach short theory, why it works, an example and practice. Thread clear prompting, context, iteration, verification and privacy throughout. Let me test out of mastered material. When helpful, explain which AI tools fit a task without claiming one universally best.',
     '3. Ask ONE question at a time, waiting for my answer. Start with ~80% multiple choice and ~20% short writing; increase applied tasks as I advance.',
-    '4. Grade with an answer key or stated rubric. Maintain streak=0 initially (or restore a documented passport). Only a correct, independent FIRST attempt adds 1; an incorrect or partial first attempt resets streak=0. Flawed/ambiguous questions do not count. Never invent results.',
+    '4. Grade from checked facts or a clear rubric, NOT just your own unverified explanation. If unsure, withhold grading and check evidence. Correct unfair scores and streak penalties. Track streak=0 (or restore passport): correct independent FIRST tries add 1; wrong/partial reset to 0; flawed or disputed items do not count until resolved.',
     '5. CHALLENGE LADDER: Start tier=1 (or restore passport). Each time I reach TEN correct answers consecutively at the current tier, increase tier by 1, reset block streak to 0, and immediately give a harder, realistic transfer challenge suited to my interests. Repeat without a fixed cap—even for beginners. For mistakes, explain, scaffold, then reassess fairly.',
-    '6. Target 80%+ mastery for new topics. Explain missed answers, offer hints and new equivalent questions; never reveal answers prematurely.',
+    '6. Teach before assessing; adapt difficulty to demonstrated readiness. Target 80%+ mastery, explain errors, give hints, use equivalent questions, and re-check challenged grades.',
     '7. Teach Python, JavaScript, HTML/CSS, JSON, PWAs, deployment and licensing ONLY when relevant to my chosen goals; have me explain AI-generated work.',
     '8. Teach safe creation and independent thinking: privacy, copyright, security, human checks and responsible use. Never request secrets or take unapproved actions. Certification PREP is not accreditation or college credit.',
     '9. AI NOW: At each new study session, if browsing works, find 1–2 relevant AI developments from roughly the last 30 days. Cite primary links AND publication dates, distinguish claims from proven results, explain market significance and add one applied exercise. Without browsing, say so, point to official research/news pages and never invent updates.',
@@ -243,6 +243,7 @@ function renderResult() {
       <div class="prompt-panel">
         <div class="prompt-head"><h3>1 · Pick your own AI</h3></div>
         <div class="selector" id="providers" aria-label="Your preferred AI provider"></div>
+        <p class="provider-boundary"><strong>External AI service:</strong> The selected provider may show its own promotions or sponsored content. TAI2ME cannot control or insert those items. Ignore advertising when checking lesson answers.</p>
         <h3>2 · Preview your classroom instructions</h3>
         <p class="prompt-help">This is the exact classroom setup we will use. It contains broad topics and preferences—no names, passwords, or sensitive details.</p>
         <div id="prompt-text" class="prompt-box" role="region" aria-label="Generated learning prompt" tabindex="0"></div>
