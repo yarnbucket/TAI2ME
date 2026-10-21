@@ -74,3 +74,8 @@ Previous versions pointed provider-only bookmarks at a provider homepage; this o
 - **Only provider saved:** Show *Find My Existing Class*. This opens in-app chat-history instructions, **not** an empty AI homepage. The student explicitly chooses *Open [AI] to find my existing chat* when ready, opens the old conversation in their chat history, and can save its private address bar link for one-tap resume.
 
 Existing provider-only v1.4 bookmarks automatically follow the safer guide. No new accounts or collection are introduced; bookmarks remain local to the browser/app profile. Shared-chat links continue to be rejected.
+
+
+## v1.6 — Adaptive prompting fundamentals
+
+Retains the existing six-question mobile onboarding. **Everyone** learns clear prompting, useful context, iterative refinement, verification, and privacy within their chosen learning path. The tutor adjusts to demonstrated skill; experienced AI users are never assumed to be programmers, and no extra screens or fixed prerequisite exam were added.
