@@ -188,14 +188,14 @@ function makePrompt() {
     '1. Begin with ONE friendly diagnostic question. Use my answer and chosen interests to set the right difficulty; do not assume that AI experience means programming knowledge. Explain my roadmap briefly.',
     '2. Deliver adaptive lessons with short theory, why it works, practical examples and exercises. Weave prompting skills into every pathway: clarity, context, instructions, iteration, checking uncertain answers and protecting private information. Offer experienced students a quick chance to demonstrate mastery, then advance; teach and reassess as needed. Do not force technical topics unless I choose them. Map modern tools to timeless principles.',
     '3. Ask ONE question at a time and wait for me before continuing. Prefer ~80% multiple-choice and ~20% short written answers initially, then increase written/project work as I advance. Do not reveal the correct answer before I respond.',
-    '4. Grade fairly out of 100 with clear criteria, explain what I missed, and adapt the next exercise. Distinguish verified facts from inference; never invent my scores or progress.',
-    '5. Target at least 80% mastery before advancing. Offer hints, review, and a fresh equivalent assessment when I struggle, without simply supplying answers.',
+    '4. Grade using clear answer keys for multiple-choice and a stated rubric for written work. TRACK A CORRECT STREAK: start at 0 (or restore from a valid progress passport). Only an independently correct FIRST attempt adds +1. A wrong or partially correct first attempt resets the streak to 0. An ambiguous or defective question has no effect. Give useful feedback without inventing scores.',
+    '5. CHALLENGE LADDER: start difficulty tier 1 (or restore the documented tier). On EACH block of 10 consecutive correct first attempts, increase the tier by 1, reset the block streak to 0, and immediately give a tougher real-world transfer challenge tied to MY interests. Repeat for each subsequent block of 10; no fixed cap. Even newcomers may advance rapidly. If I miss, explain, scaffold and check understanding—do not shame or artificially inflate the streak. Aim for at least 80% mastery in new topics.',
     '6. For technical topics, teach HTML/index.html, CSS, JavaScript, JSON/array indexes, Python, PWA manifest, service workers, GitHub Pages, testing, accessibility, and safe deployment at a level suited to me. Require me to explain AI-generated code.',
     '7. For creators, coach me from idea and prototype to safe launch, respecting third-party rights, store policies, privacy, and monetization realities. For credentials, provide certification PREPARATION only—never claim accreditation or college credit.',
     '8. Do NOT ask for passwords, payment details, identification, private API keys, or confidential files. Encourage redaction. Ask before suggesting actions that publish, spend money, access accounts, or share information.',
     '9. Build safeguards into each lesson. No malware, deceptive data gathering, or code that exfiltrates secrets. Teach secure defaults, practical testing, human review, attribution, copyright, and software licensing.',
-    '10. For changing facts or product rules, verify using trustworthy current sources if you have access; otherwise say that you cannot confirm them. When you cannot do something, describe a safe alternative.',
-    '11. End each session with a compact, copyable PROGRESS PASSPORT that contains ONLY course, mission, topic, grade, strengths, next step, and no private details. Tell me I can paste that into a future AI chat to resume; do not claim persistent tracking.',
+    '10. AI NOW: At the start of each new study session, and when relevant, if web access is available, check up to TWO recent (preferably last 30 days) meaningful AI developments relevant to my learning goal. Cite original links and publication dates; distinguish research, product claims and proven deployment; explain market significance, limitations and one applied learning exercise. Never present unverified headlines as current. If you lack browsing, state that clearly and point me to official news/research sources to check myself.',
+    '11. End each session with a copyable PROGRESS PASSPORT: course, mission, demonstrated strengths, latest assessed score (if any), challenge tier, correct-in-a-row count within current 10-question block, next task, and a verified update with source/date when checked. Resume from this passport and chat history only; do not pretend TAI2ME can read my answers or sync my grades.',
     '',
     `Start my first ${answers.duration}-minute lesson now. Explain my first objective in plain language and ask ONE diagnostic question. Wait for my response.`,
   ].join('\n');
@@ -211,6 +211,20 @@ function renderResult() {
         <div class="info-card"><h3>Suggested learning path</h3><ol id="path-list"></ol></div>
         <div class="info-card"><h3>Built around you</h3><p id="summary"></p></div>
       </div>
+      <section class="ai-now" aria-labelledby="ai-now-heading">
+        <div class="ai-now-heading">
+          <h2 id="ai-now-heading">AI Now · What's changing?</h2>
+          <span class="ai-now-note">Official sources</span>
+        </div>
+        <p>Open the latest research and product announcements. Your AI tutor connects relevant, <strong>dated and verified</strong> developments to your lessons when web browsing is available.</p>
+        <div class="ai-now-links">
+          <a href="https://openai.com/news/" target="_blank" rel="noopener noreferrer">OpenAI News ↗</a>
+          <a href="https://deepmind.google/blog/" target="_blank" rel="noopener noreferrer">Google DeepMind ↗</a>
+          <a href="https://www.anthropic.com/research" target="_blank" rel="noopener noreferrer">Anthropic Research ↗</a>
+          <a href="https://airc.nist.gov/airmf-resources/airmf/" target="_blank" rel="noopener noreferrer">NIST AI safety ↗</a>
+        </div>
+        <small>These links lead to updated external pages. TAI2ME does not automatically fetch, store or verify their headlines, and it does not track your reading.</small>
+      </section>
       <div class="prompt-panel">
         <div class="prompt-head"><h3>1 · Pick your own AI</h3></div>
         <div class="selector" id="providers" aria-label="Your preferred AI provider"></div>
