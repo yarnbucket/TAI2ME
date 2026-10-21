@@ -84,7 +84,7 @@ function renderWelcome() {
     <div class="promise-row"><span class="promise">✓ No sign-up</span><span class="promise">✓ No tracking</span><span class="promise">✓ You choose what to share</span></div>
     <button type="button" class="primary" id="begin">Build my AI classroom <span aria-hidden="true">→</span></button>
     <p class="hero-note">Takes about 2 minutes · No sign-up, tracking, or passwords · Works with your own AI account.</p>
-    <button type="button" class="return-help-btn" id="find-class">Already have a class? Find or save it here →</button>
+    <button type="button" class="return-help-btn" id="find-class">Already have a class? Find or continue it here →</button>
     <div class="mini-flow"><strong>YOUR INTERESTS</strong><span aria-hidden="true">→</span><strong>YOUR LEARNING PLAN</strong><span aria-hidden="true">→</span><strong>YOUR AI</strong></div>
   </section>`;
   document.querySelector('#begin').addEventListener('click', () => { step = 0; renderAndFocus(); });
@@ -439,12 +439,9 @@ const classDialog = document.querySelector('#class-link-dialog');
 const classProviderInput = document.querySelector('#class-provider');
 const classURLInput = document.querySelector('#class-url');
 const classFeedback = document.querySelector('#class-link-feedback');
-const classHome = document.querySelector('#class-home');
-const classContinue = document.querySelector('#class-continue');
-const classFind = document.querySelector('#class-find');
+const classResumeAvailable = document.querySelector('#class-resume-available');
+const classResumeLink = document.querySelector('#class-resume-link');
 const classOpenProvider = document.querySelector('#class-open-provider');
-const classHomeStatus = document.querySelector('#class-home-status');
-const classHomeTitle = document.querySelector('#class-home-title');
 const classOrigins = Object.freeze({
   ChatGPT: 'https://chatgpt.com/',
   Gemini: 'https://gemini.google.com/app',
@@ -491,23 +488,13 @@ function readClassBookmark() {
 }
 function renderClassBookmark() {
   const saved = readClassBookmark();
-  classHome.hidden = !saved;
-  // Never point the "Continue" shortcut at an AI homepage: doing so opens
-  // an empty/new chat and falsely implies a specific lesson was recovered.
-  classContinue.hidden = true;
-  classContinue.removeAttribute('href');
-  classFind.hidden = true;
-  if (!saved) return;
-  classHomeTitle.textContent = CLASS_TITLE;
-  if (saved.url) {
-    classContinue.href = saved.url;
-    classContinue.hidden = false;
-    classContinue.textContent = '▶ Continue My Class';
-    classHomeStatus.textContent = 'Ready to resume your saved ' + saved.provider + ' conversation. Sign into the same AI account if asked.';
-  } else {
-    classFind.hidden = false;
-    classFind.textContent = '⌕ Find My Existing Class';
-    classHomeStatus.textContent = 'Your ' + saved.provider + ' classroom is not linked to a specific chat yet. Find it in your existing chat history; no new lesson is needed.';
+  // A saved chat can be reopened from the discreet settings dialog only.
+  // Never offer a generic AI homepage as "Continue My Class".
+  classResumeLink.removeAttribute('href');
+  classResumeAvailable.hidden = !saved?.url;
+  if (saved?.url) {
+    classResumeLink.href = saved.url;
+    classResumeLink.textContent = '▶ Continue my ' + saved.provider + ' class';
   }
 }
 function openClassSettings(preferredProvider) {
@@ -545,8 +532,7 @@ function updateProviderFindHelp() {
   } else classOpenProvider.removeAttribute('href');
 }
 classProviderInput.addEventListener('change', updateProviderFindHelp);
-classFind.addEventListener('click',()=>openClassSettings());
-document.querySelector('#class-manage').addEventListener('click',()=>openClassSettings());
+// The welcome-page "Find or continue my class" link opens these settings.
 document.querySelector('#class-link-close').addEventListener('click',closeClassSettings);
 classDialog.addEventListener('click',event => { if (event.target === classDialog) closeClassSettings(); });
 document.querySelector('#class-link-save').addEventListener('click',()=>{
@@ -562,7 +548,7 @@ document.querySelector('#class-link-save').addEventListener('click',()=>{
     renderClassBookmark();
     classFeedback.textContent = checked.url
       ? 'Saved! Your TAI2ME icon can now reopen this private chat on this device.'
-      : 'Saved provider only (not a conversation link). Your T2 shortcut will now show a guided Find My Existing Class button, not open a blank chat.';
+      : 'Saved provider only, not a specific conversation. Use this guide anytime to find your existing lesson in your AI chat history.';
     // Explicit confirmation before closing so the student sees what was saved.
   } catch(e) {
     classFeedback.textContent = e.message || 'Could not save this shortcut; use your AI provider chat history instead.';
