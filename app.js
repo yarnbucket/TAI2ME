@@ -84,11 +84,9 @@ function renderWelcome() {
     <div class="promise-row"><span class="promise">✓ No sign-up</span><span class="promise">✓ No tracking</span><span class="promise">✓ You choose what to share</span></div>
     <button type="button" class="primary" id="begin">Build my AI classroom <span aria-hidden="true">→</span></button>
     <p class="hero-note">Takes about 2 minutes · No sign-up, tracking, or passwords · Works with your own AI account.</p>
-    <button type="button" class="return-help-btn" id="find-class">Already have a class? Find or continue it here →</button>
     <div class="mini-flow"><strong>YOUR INTERESTS</strong><span aria-hidden="true">→</span><strong>YOUR LEARNING PLAN</strong><span aria-hidden="true">→</span><strong>YOUR AI</strong></div>
   </section>`;
   document.querySelector('#begin').addEventListener('click', () => { step = 0; renderAndFocus(); });
-  document.querySelector('#find-class').addEventListener('click', () => openClassSettings());
 }
 function renderQuestion(q) {
   const value = answers[q.key];
@@ -307,6 +305,8 @@ privacyToggle.addEventListener('click',()=>{
   const notes=document.querySelector('#privacy-notes'), expanded=privacyToggle.getAttribute('aria-expanded')==='true';
   notes.hidden=expanded; privacyToggle.setAttribute('aria-expanded',String(!expanded));
 });
+// Keep classroom recovery available without crowding the welcome card.
+document.querySelector('#footer-find-class').addEventListener('click', () => openClassSettings());
 
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
