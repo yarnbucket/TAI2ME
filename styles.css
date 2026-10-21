@@ -123,3 +123,16 @@
 @media(max-width:360px){
   .hero #welcome-title{font-size:clamp(24px,7.4vw,28px);letter-spacing:-1px}
 }
+
+/* v1.11 — opt-in, source-linked AI developments; no dynamic third-party scripts. */
+.ai-now{margin:20px 0;padding:17px 19px;border:1px solid #527c92;border-radius:16px;background:linear-gradient(130deg,rgba(29,65,86,.95),rgba(22,37,67,.95))}
+.ai-now-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ai-now h2{font-size:clamp(17px,3.5vw,22px);margin:0;color:#d6fff5}
+.ai-now-note{text-transform:uppercase;color:#a0f6e0;letter-spacing:.5px;font-size:10px;font-weight:800}
+.ai-now p{margin:10px 0 14px;color:#d7e7fa;font-size:13px;line-height:1.6}
+.ai-now-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.ai-now-links a{display:flex;align-items:center;justify-content:center;min-height:43px;padding:9px 11px;border:1px solid #5086a3;border-radius:10px;background:#243d62;color:#e7fff6;font-size:12px;font-weight:750;text-align:center;text-decoration:none}
+.ai-now-links a:hover{background:#315578}
+.ai-now-links a:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+.ai-now small{display:block;color:#acc8dc;line-height:1.5;margin-top:12px;font-size:11px}
+@media(max-width:360px){.ai-now-links{grid-template-columns:1fr}.ai-now{padding:14px}}
