@@ -116,3 +116,10 @@
   .hero .promise{font-size:clamp(8px,2.2vw,10px);padding:8px 2px}
   .footer-links{width:auto;max-width:100%;margin-left:auto;gap:12px}
 }
+
+/* v1.10 — intentionally two clean lines on phones, without accidental wrapping */
+.hero #welcome-title{font-size:clamp(26px,7.5vw,56px);letter-spacing:-1.4px;line-height:1.12}
+.hero #welcome-title .welcome-title-line{display:block;white-space:nowrap}
+@media(max-width:360px){
+  .hero #welcome-title{font-size:clamp(24px,7.4vw,28px);letter-spacing:-1px}
+}
