@@ -159,3 +159,14 @@
 /* v1.14: external provider boundary displayed at launch */
 .provider-boundary{font-size:12px;line-height:1.55;color:#cbdcf2;margin:12px 0 18px;padding:11px 13px;border-left:3px solid #70d6c9;background:#1b2b48;border-radius:8px}
 .provider-boundary strong{color:#e7fff8}
+
+/* v1.15 — simple, optional classroom-update dialog and permanent footer entry */
+.class-update-version{font-size:12px;font-weight:750;color:#a5f2e0;margin:14px 0 7px;line-height:1.5}
+.class-update-summary{font-size:13px;line-height:1.55;color:#e1ebfc;margin:7px 0}
+.class-update-text{width:100%;min-height:180px;max-height:35vh;resize:vertical;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;line-height:1.5;color:#f0f7ff;background:#0d1a33;border:1px solid #66829d;border-radius:12px;padding:12px}
+.class-update-text:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.class-update-actions{display:flex;flex-direction:column;gap:9px;margin:15px 0}
+.class-update-actions .primary,.class-update-actions .secondary{display:flex;align-items:center;justify-content:center;text-align:center;width:100%;min-height:48px;padding:10px}
+.class-update-actions button:disabled{opacity:.55;cursor:not-allowed}
+.footer-links{display:flex;flex-wrap:wrap;gap:9px 16px;align-items:center;justify-content:flex-end}
+@media(max-width:600px){.footer-links{width:100%;justify-content:space-between;gap:8px}.footer-links .foot-link{font-size:clamp(10px,2.9vw,13px)}}
