@@ -626,6 +626,7 @@ const updateAlert = document.querySelector('#class-update-alert');
 const UPDATE_COPIED_KEY = 'tai2me_copied_classroom_update_v1';
 const UPDATE_ALERTED_KEY = 'tai2me_alerted_classroom_update_v1';
 let checkedUpdateVersion = null;
+let displayedUpdateVersion = null;
 let notifiedUpdateVersion = null;
 
 function readUpdatePreference(key) {
@@ -692,12 +693,14 @@ async function fetchClassroomUpdate() {
   classUpdateVersion.textContent = 'Checking the latest update…';
   classUpdateSummary.textContent = '';
   classUpdateText.value = '';
+  displayedUpdateVersion = null;
   classUpdateCopy.disabled = true;
   classUpdateStatus.textContent = 'Checking the latest instructions. Nothing is sent to your AI.';
   try {
     const response = await fetch('./classroom-update.json', {cache:'no-store'});
     if (!response.ok) throw new Error('Update unavailable (' + response.status + ').');
     const content = validateClassroomUpdate(await response.json());
+    displayedUpdateVersion = content.version;
     checkedUpdateVersion = content.version;
     showPendingUpdate(content.version,false);
     classUpdateVersion.textContent = content.title + ' · ' + content.version + ' · ' + content.updated;
@@ -756,9 +759,9 @@ classUpdateCopy.addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText(classUpdateText.value);
     // Copied, not applied: the student must paste and send it to their existing chat.
-    if (checkedUpdateVersion) {
-      writeUpdatePreference(UPDATE_COPIED_KEY,checkedUpdateVersion);
-      showPendingUpdate(checkedUpdateVersion,false);
+    if (displayedUpdateVersion) {
+      writeUpdatePreference(UPDATE_COPIED_KEY,displayedUpdateVersion);
+      showPendingUpdate(checkedUpdateVersion||displayedUpdateVersion,false);
     }
     classUpdateStatus.textContent = 'Copied. Open the SAME AI classroom conversation, paste this update and press Send. This version will no longer show the UPDATE badge on this device.';
   } catch (error) {
