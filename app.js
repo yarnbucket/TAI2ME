@@ -610,4 +610,100 @@ document.querySelector('#class-link-delete').addEventListener('click',()=>{
 });
 renderClassBookmark();
 
+
+// Stable classroom update endpoint. Contents stay on this first-party static site.
+// Every explicit "Update my class" tap checks the current public JSON file.
+// We never auto-send an update or access a student's existing conversation.
+const classUpdateDialog = document.querySelector('#class-update-dialog');
+const classUpdateText = document.querySelector('#class-update-text');
+const classUpdateVersion = document.querySelector('#class-update-version');
+const classUpdateSummary = document.querySelector('#class-update-summary');
+const classUpdateStatus = document.querySelector('#class-update-status');
+const classUpdateCopy = document.querySelector('#class-update-copy');
+const classUpdateResume = document.querySelector('#class-update-resume');
+
+function validateClassroomUpdate(data) {
+  if (!data || data.schema !== 1 ||
+      typeof data.version !== 'string' || !/^[\w.-]{1,32}$/.test(data.version) ||
+      typeof data.updated !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(data.updated) ||
+      typeof data.title !== 'string' || data.title.length > 120 ||
+      typeof data.summary !== 'string' || data.summary.length > 300 ||
+      typeof data.instructions !== 'string' ||
+      data.instructions.trim().length < 30 || data.instructions.length > 6000) {
+    throw new Error('The classroom update file has an unexpected format.');
+  }
+  return {
+    version:data.version, updated:data.updated, title:data.title,
+    summary:data.summary, instructions:data.instructions.trim()
+  };
+}
+async function fetchClassroomUpdate() {
+  classUpdateVersion.textContent = 'Checking the latest update…';
+  classUpdateSummary.textContent = '';
+  classUpdateText.value = '';
+  classUpdateCopy.disabled = true;
+  classUpdateStatus.textContent = 'Checking the latest instructions. Nothing is sent to your AI.';
+  try {
+    const response = await fetch('./classroom-update.json', {cache:'no-store'});
+    if (!response.ok) throw new Error('Update unavailable (' + response.status + ').');
+    const content = validateClassroomUpdate(await response.json());
+    classUpdateVersion.textContent = content.title + ' · ' + content.version + ' · ' + content.updated;
+    classUpdateSummary.textContent = content.summary;
+    classUpdateText.value = content.instructions;
+    classUpdateCopy.disabled = false;
+    classUpdateStatus.textContent = 'Ready. Copy once into your EXISTING conversation to apply this version.';
+  } catch (error) {
+    classUpdateStatus.textContent = 'Unable to check for the latest update. Check your connection and reopen this window. No old update has been labeled as current.';
+    classUpdateVersion.textContent = 'Latest version could not be verified';
+  }
+}
+function refreshUpdateClassLink() {
+  const saved = readClassBookmark();
+  classUpdateResume.hidden = !saved?.url;
+  classUpdateResume.removeAttribute('href');
+  if (saved?.url) {
+    classUpdateResume.href = saved.url;
+    classUpdateResume.textContent = 'Open ' + (saved.lessonTitle || 'my saved class') + ' ↗';
+  }
+}
+function openClassUpdate() {
+  refreshUpdateClassLink();
+  if (typeof classUpdateDialog.showModal === 'function') {
+    if (!classUpdateDialog.open) classUpdateDialog.showModal();
+  } else classUpdateDialog.setAttribute('open','');
+  void fetchClassroomUpdate();
+}
+function closeClassUpdate() {
+  if (typeof classUpdateDialog.close === 'function' && classUpdateDialog.open) classUpdateDialog.close();
+  else classUpdateDialog.removeAttribute('open');
+  // A shareable #update link stays stable; closing should not reopen on refresh.
+  if (location.hash === '#update') {
+    history.replaceState(null, '', location.pathname + location.search);
+  }
+}
+document.querySelector('#footer-update-class').addEventListener('click', openClassUpdate);
+document.querySelector('#class-update-close').addEventListener('click', closeClassUpdate);
+classUpdateDialog.addEventListener('click', event => {
+  if (event.target === classUpdateDialog) closeClassUpdate();
+});
+document.querySelector('#class-update-find').addEventListener('click', () => {
+  closeClassUpdate();
+  openClassSettings();
+});
+classUpdateCopy.addEventListener('click', async () => {
+  if (classUpdateCopy.disabled || !classUpdateText.value) return;
+  try {
+    await navigator.clipboard.writeText(classUpdateText.value);
+    classUpdateStatus.textContent = 'Copied. Open the SAME AI classroom conversation, paste this update and press Send.';
+  } catch (error) {
+    classUpdateText.focus();
+    classUpdateText.select();
+    classUpdateStatus.textContent = 'Your browser blocked automatic copying. The text is selected: use Copy, then paste it into your existing class.';
+  }
+});
+window.addEventListener('hashchange', () => {
+  if (location.hash === '#update') openClassUpdate();
+});
+
 render();
+if (location.hash === '#update') openClassUpdate();
