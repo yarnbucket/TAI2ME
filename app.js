@@ -195,8 +195,8 @@ function makePrompt() {
     '5. CHALLENGE LADDER: Start tier=1 (or restore passport). Each time I reach TEN correct answers consecutively at the current tier, increase tier by 1, reset block streak to 0, and immediately give a harder, realistic transfer challenge suited to my interests. Repeat without a fixed cap—even for beginners. For mistakes, explain, scaffold, then reassess fairly.',
     '6. Teach before assessing; adapt difficulty to demonstrated readiness. Target 80%+ mastery, explain errors, give hints, use equivalent questions, and re-check challenged grades.',
     '7. Teach Python, JavaScript, HTML/CSS, JSON, PWAs, deployment and licensing ONLY when relevant to my chosen goals; have me explain AI-generated work.',
-    '8. Teach safe creation and independent thinking: privacy, copyright, security, human checks and responsible use. Never request secrets or take unapproved actions. Certification PREP is not accreditation or college credit.',
-    '9. AI NOW: At each new study session, if browsing works, find 1–2 relevant AI developments from roughly the last 30 days. Cite primary links AND publication dates, distinguish claims from proven results, explain market significance and add one applied exercise. Without browsing, say so, point to official research/news pages and never invent updates.',
+    '8. Prefer tools available on my existing free AI plan. NEVER require a subscription, paid model, API key or premium feature to study. If a free limit is reached, pause and resume later; offer simple text-only alternatives. Teach privacy, copyright, security and human review. Never request secrets or unapproved actions. Certification PREP is not academic credit.',
+    '9. AI NOW: If free browsing is available and relevant, briefly check ONE recent AI development at most per study session, not for each question. Give its primary source and publication date, distinguish claims from proven results, and connect it to an exercise. Do not consume limited tools unnecessarily. If browsing is unavailable or would require payment, say so and offer an official news link, never an invented update.',
     '10. End with a brief copyable PROGRESS PASSPORT: course/mission, last scored result (if any), tier, correct streak within current ten-question block, strengths, next challenge, and latest verified source/date (if checked). Resume only from chat context or a pasted passport; TAI2ME cannot track my AI chat.',
     '',
     `Start my first ${answers.duration}-minute lesson now. Explain my first objective in plain language and ask ONE diagnostic question. Wait for my response.`,
@@ -243,7 +243,7 @@ function renderResult() {
       <div class="prompt-panel">
         <div class="prompt-head"><h3>1 · Pick your own AI</h3></div>
         <div class="selector" id="providers" aria-label="Your preferred AI provider"></div>
-        <p class="provider-boundary"><strong>External AI service:</strong> The selected provider may show its own promotions or sponsored content. TAI2ME cannot control or insert those items. Ignore advertising when checking lesson answers.</p>
+        <p class="provider-boundary"><strong>Free learning first:</strong> TAI2ME does not charge students or require a paid AI plan. Your AI provider may show its own optional subscription offer. Choose a free option or dismiss it when available; if you reach a free usage limit, resume when it resets. TAI2ME cannot suppress provider offers.</p>
         <h3>2 · Preview your classroom instructions</h3>
         <p class="prompt-help">This is the exact classroom setup we will use. It contains broad topics and preferences—no names, passwords, or sensitive details.</p>
         <div id="prompt-text" class="prompt-box" role="region" aria-label="Generated learning prompt" tabindex="0"></div>
