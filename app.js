@@ -621,6 +621,57 @@ const classUpdateSummary = document.querySelector('#class-update-summary');
 const classUpdateStatus = document.querySelector('#class-update-status');
 const classUpdateCopy = document.querySelector('#class-update-copy');
 const classUpdateResume = document.querySelector('#class-update-resume');
+const updateBadge = document.querySelector('#class-update-badge');
+const updateAlert = document.querySelector('#class-update-alert');
+const UPDATE_COPIED_KEY = 'tai2me_copied_classroom_update_v1';
+const UPDATE_ALERTED_KEY = 'tai2me_alerted_classroom_update_v1';
+let checkedUpdateVersion = null;
+let notifiedUpdateVersion = null;
+
+function readUpdatePreference(key) {
+  try { return localStorage.getItem(key) || ''; } catch(e) { return ''; }
+}
+function writeUpdatePreference(key,value) {
+  try { localStorage.setItem(key,value); } catch(e) { /* Storage might be disabled. */ }
+}
+function updateAppIconBadge(active) {
+  // Optional app-icon badge on supported devices. Never prompt for notification permission.
+  if (active && typeof navigator.setAppBadge === 'function') {
+    Promise.resolve(navigator.setAppBadge(1)).catch(()=>{});
+  } else if (!active && typeof navigator.clearAppBadge === 'function') {
+    Promise.resolve(navigator.clearAppBadge()).catch(()=>{});
+  }
+}
+function showPendingUpdate(version,announce=false) {
+  const pending = !!version && readUpdatePreference(UPDATE_COPIED_KEY)!==version;
+  updateBadge.hidden = !pending;
+  updateAppIconBadge(pending);
+  if (!pending) {
+    updateAlert.hidden = true;
+    return;
+  }
+  if (announce && readUpdatePreference(UPDATE_ALERTED_KEY)!==version && notifiedUpdateVersion!==version) {
+    notifiedUpdateVersion = version;
+    updateAlert.hidden = false;
+    writeUpdatePreference(UPDATE_ALERTED_KEY,version);
+  }
+}
+async function checkForClassroomUpdate() {
+  try {
+    const result = await fetch('./classroom-update.json',{cache:'no-store'});
+    if (!result.ok) throw new Error('Update service unavailable');
+    const content = validateClassroomUpdate(await result.json());
+    checkedUpdateVersion = content.version;
+    showPendingUpdate(content.version,true);
+  } catch(e) {
+    // No false "new update" signal when offline or the server is unavailable.
+    if (!checkedUpdateVersion) {
+      updateBadge.hidden = true;
+      updateAlert.hidden = true;
+    }
+  }
+}
+
 
 function validateClassroomUpdate(data) {
   if (!data || data.schema !== 1 ||
@@ -647,6 +698,8 @@ async function fetchClassroomUpdate() {
     const response = await fetch('./classroom-update.json', {cache:'no-store'});
     if (!response.ok) throw new Error('Update unavailable (' + response.status + ').');
     const content = validateClassroomUpdate(await response.json());
+    checkedUpdateVersion = content.version;
+    showPendingUpdate(content.version,false);
     classUpdateVersion.textContent = content.title + ' · ' + content.version + ' · ' + content.updated;
     classUpdateSummary.textContent = content.summary;
     classUpdateText.value = content.instructions;
@@ -682,6 +735,14 @@ function closeClassUpdate() {
   }
 }
 document.querySelector('#footer-update-class').addEventListener('click', openClassUpdate);
+updateBadge.addEventListener('click',openClassUpdate);
+document.querySelector('#class-update-view').addEventListener('click',()=>{
+  updateAlert.hidden = true;
+  openClassUpdate();
+});
+document.querySelector('#class-update-dismiss').addEventListener('click',()=>{
+  updateAlert.hidden = true;
+});
 document.querySelector('#class-update-close').addEventListener('click', closeClassUpdate);
 classUpdateDialog.addEventListener('click', event => {
   if (event.target === classUpdateDialog) closeClassUpdate();
@@ -694,7 +755,12 @@ classUpdateCopy.addEventListener('click', async () => {
   if (classUpdateCopy.disabled || !classUpdateText.value) return;
   try {
     await navigator.clipboard.writeText(classUpdateText.value);
-    classUpdateStatus.textContent = 'Copied. Open the SAME AI classroom conversation, paste this update and press Send.';
+    // Copied, not applied: the student must paste and send it to their existing chat.
+    if (checkedUpdateVersion) {
+      writeUpdatePreference(UPDATE_COPIED_KEY,checkedUpdateVersion);
+      showPendingUpdate(checkedUpdateVersion,false);
+    }
+    classUpdateStatus.textContent = 'Copied. Open the SAME AI classroom conversation, paste this update and press Send. This version will no longer show the UPDATE badge on this device.';
   } catch (error) {
     classUpdateText.focus();
     classUpdateText.select();
@@ -704,6 +770,16 @@ classUpdateCopy.addEventListener('click', async () => {
 window.addEventListener('hashchange', () => {
   if (location.hash === '#update') openClassUpdate();
 });
+window.addEventListener('pageshow',()=>{
+  if (location.hash !== '#update') void checkForClassroomUpdate();
+});
+document.addEventListener('visibilitychange',()=>{
+  if (!document.hidden && location.hash !== '#update') void checkForClassroomUpdate();
+});
+window.addEventListener('online',()=>{
+  if (location.hash !== '#update') void checkForClassroomUpdate();
+});
 
 render();
 if (location.hash === '#update') openClassUpdate();
+else void checkForClassroomUpdate();
