@@ -185,3 +185,17 @@
 .update-alert-action{border:1px solid #7f9ab3;background:#2b4c6e;border-radius:9px;color:#e5fff6;padding:8px 10px;font-size:12px;font-weight:700}
 .update-alert-dismiss{border:1px solid #506783;background:#202f49;color:#f4f7ff;border-radius:8px;width:34px;height:34px;font-size:20px}
 @media(max-width:500px){.class-update-alert{align-items:flex-start;flex-direction:column;gap:8px}.update-alert-actions{align-self:flex-end}.topbar-release{gap:5px}.class-update-badge{padding:5px 8px;font-size:10px}}
+
+/* v1.17 — custom learning subjects in existing six-question interview */
+.custom-topic-panel{margin:18px 0 6px;padding:16px;border:1px solid #47698c;border-radius:15px;background:#192d4c}
+.custom-topic-label{display:block;color:#d6fff2;font-size:15px;font-weight:800;margin:0 0 5px}
+.custom-topic-hint{font-size:12px;line-height:1.5;color:#bfcfe6;margin:0 0 12px}
+.custom-topic-input{width:100%;min-height:49px;background:#0f203d;border:1px solid #7894b6;border-radius:11px;color:#f4f9ff;font-size:16px;padding:12px;line-height:1.4}
+.custom-topic-input::placeholder{color:#c1cce0;opacity:.82}
+.custom-topic-input:focus-visible,.custom-topic-example:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.custom-topic-examples{display:flex;gap:9px;flex-wrap:wrap;margin-top:11px}
+.custom-topic-example{border:1px solid #537e99;border-radius:999px;padding:8px 12px;background:#243c5a;color:#e9f6fe;font-size:12px;font-weight:700;min-height:36px}
+.custom-topic-example:hover{background:#305172}
+.custom-subject-banner{font-size:13px;color:#dff4fe;background:#1a3a53;border:1px solid #497c94;border-radius:12px;padding:12px 14px;line-height:1.55;margin:17px 0}
+.custom-subject-banner strong{color:#d6fff2}
+@media(max-width:390px){.custom-topic-panel{padding:13px}.custom-topic-example{flex:1 1 auto;text-align:center}}
